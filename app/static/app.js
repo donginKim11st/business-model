@@ -29,8 +29,9 @@ document.addEventListener("click", async (e) => {
   try {
     const fd = new FormData();
     fd.append("draft", draftEl.textContent);
-    const photo = document.getElementById("photo");
-    if (photo && photo.files[0]) fd.append("photo", photo.files[0]);
+    document.querySelectorAll("input[data-slot]").forEach((inp) => {
+      if (inp.files[0]) fd.append(inp.dataset.slot, inp.files[0]);
+    });
     const r = await fetch(`/product/${encodeURIComponent(uid)}/detail-image`, { method: "POST", body: fd });
     if (!r.ok) throw new Error(r.status);
     const blob = await r.blob();

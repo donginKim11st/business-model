@@ -11,7 +11,15 @@
   {% if d.price_positioning %}<h3>가격 포지셔닝</h3><p>{{ d.price_positioning }}</p>{% endif %}
 </div>
 <div class=export>
-  <input type=file id=photo accept="image/*">
+  <div class=slot-grid>
+    {% for s in slots %}
+    <label class=slot-card>
+      <span class=slot-label>{{ s.label }}</span>
+      <span class=slot-role>{{ s.role }}</span>
+      <input type=file id="slot-{{ s.key }}" data-slot="{{ s.key }}" accept="image/png,image/jpeg,image/webp">
+    </label>
+    {% endfor %}
+  </div>
   <button id=exportbtn data-uid="{{ uid }}">이미지로 내보내기</button>
 </div>
 {% endif %}

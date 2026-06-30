@@ -41,9 +41,9 @@ def draft(request: Request, uid: str):
         return HTMLResponse("<p class=err>상품을 찾을 수 없습니다.</p>", status_code=404)
     try:
         d = generate.draft(build_view(doc))
-        return templates.TemplateResponse(request, "_draft.html", {"d": d, "uid": uid, "error": None})
+        return templates.TemplateResponse(request, "_draft.html", {"d": d, "uid": uid, "slots": detail_page.SLOTS, "error": None})
     except GenerateError:
-        return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "error": True})
+        return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "slots": detail_page.SLOTS, "error": True})
 
 
 class _BadImage(Exception):

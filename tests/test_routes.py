@@ -61,3 +61,17 @@ def test_draft_failure_returns_error_fragment_not_500(monkeypatch):
     r = c.post("/product/P7863/draft")
     assert r.status_code == 200
     assert "생성 실패" in r.text
+
+
+def test_draft_fragment_has_slot_cards(monkeypatch):
+    draft = {"titles": ["A", "B", "C"], "selling_points": [{"text": "간편", "sources": ["naver"]}],
+             "target_copy": "x", "faqs": [{"q": "q", "a": "a"}], "spec_highlights": ["s"], "price_positioning": "p"}
+    monkeypatch.setattr(main.data, "get_product", lambda uid, **k: DOC)
+    monkeypatch.setattr(main.generate, "draft", lambda v, **k: draft)
+    c = TestClient(main.app)
+    r = c.post("/product/P7863/draft")
+    assert r.status_code == 200
+    for key in ("hero", "detail", "usage", "sub"):
+        assert f'id="slot-{key}"' in r.text            # 슬롯별 파일 입력
+    assert "히어로" in r.text and "사용씬" in r.text   # 슬롯 라벨
+    assert "이미지로 내보내기" in r.text
