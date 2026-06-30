@@ -19,7 +19,7 @@ app.mount("/static", StaticFiles(directory=str(_HERE / "static")), name="static"
 @app.get("/", response_class=HTMLResponse)
 def search(request: Request, q: str = ""):
     products = data.find_products(q) if q.strip() else []
-    return templates.TemplateResponse("search.html", {"request": request, "q": q, "products": products})
+    return templates.TemplateResponse(request, "search.html", {"q": q, "products": products})
 
 
 @app.get("/product/{uid}", response_class=HTMLResponse)
@@ -27,7 +27,7 @@ def product(request: Request, uid: str):
     doc = data.get_product(uid)
     if doc is None:
         return HTMLResponse("<h1>404 · 상품을 찾을 수 없습니다</h1><a href=\"/\">검색으로</a>", status_code=404)
-    return templates.TemplateResponse("product.html", {"request": request, "v": build_view(doc)})
+    return templates.TemplateResponse(request, "product.html", {"v": build_view(doc)})
 
 
 @app.post("/product/{uid}/draft", response_class=HTMLResponse)
@@ -37,6 +37,6 @@ def draft(request: Request, uid: str):
         return HTMLResponse("<p class=err>상품을 찾을 수 없습니다.</p>", status_code=404)
     try:
         d = generate.draft(build_view(doc))
-        return templates.TemplateResponse("_draft.html", {"request": request, "d": d, "error": None})
+        return templates.TemplateResponse(request, "_draft.html", {"d": d, "error": None})
     except GenerateError:
-        return templates.TemplateResponse("_draft.html", {"request": request, "d": None, "error": True})
+        return templates.TemplateResponse(request, "_draft.html", {"d": None, "error": True})
