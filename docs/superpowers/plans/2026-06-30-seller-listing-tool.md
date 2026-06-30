@@ -18,6 +18,23 @@
 - 생성은 인사이트 뷰모델만 LLM에 투입한다(원본 리뷰 원문을 통째로 넣지 않는다). 뷰모델에 없는 사실 생성 금지.
 - 비밀키는 `.env` 로만. 절대 커밋하지 않는다(`.gitignore`에 `.env` 이미 포함).
 - 모든 외부 I/O(Mongo, OpenAI)는 테스트에서 모킹/mongomock 으로 격리한다. 라이브 호출 테스트는 `@pytest.mark.live` 로 기본 skip.
+- **UI 디자인 방향:** Dribbble "Lumos – Energy Management Dashboard" 참고. 아래 "UI 디자인 방향" 섹션의 디자인 토큰을 그대로 따른다(따뜻한 오프화이트 배경 #f2f0ec, 화이트 라운드 카드, 선셋 액센트 오렌지 #ff5a1f / 앰버 #ffb020, 큰 볼드 숫자, 부드러운 그림자, 라운드 18px).
+
+## UI 디자인 방향 (Lumos 참고)
+
+Dribbble shot "Lumos – Energy Management Dashboard"(Stan D. / RonDesignLab)의 비주얼 언어를 차용한다. 우리 앱은 에너지 대시보드가 아니지만 시각 언어가 잘 맞는다:
+
+| Lumos 요소 | 우리 매핑 |
+|---|---|
+| 따뜻한 오프화이트 배경, 화이트 라운드 카드 + 소프트 섀도 | 검색결과·인사이트 블록 = 화이트 라운드 카드 |
+| 큰 볼드 헤딩 + 작은 뮤트 라벨 | 상품명 = 큰 볼드 h1, 메타 = 뮤트 |
+| 큰 볼드 숫자 + 작은 서브라벨(스탯 카드) | 리뷰 수 = 스탯 칩, 가격 = 큰 숫자 |
+| 선셋 그라데이션(오렌지→앰버) 차트/게이지 | 빈도 n = 오렌지 알약 배지, 액센트 = 오렌지 |
+| 상단 로고(오렌지 사선 바) + 헤더 | 헤더 로고 = 오렌지 사선 바 (CSS `.logo::before`) |
+| 크림 톤 보조 영역 | 근거(evidence) 인용 = 크림 블록 |
+
+디자인 토큰(Task 7 CSS 에서 구현):
+`--bg:#f2f0ec` `--card:#fff` `--cream:#faf6f0` `--fg:#1a1a1a` `--muted:#938d83` `--line:#ece7df` `--accent:#ff5a1f` `--accent-2:#ffb020` `--radius:18px`, 그림자 `0 1px 2px rgba(20,16,10,.04),0 10px 30px rgba(20,16,10,.06)`, 시스템 산세리프, 숫자 볼드.
 
 ### 데이터 계약 (실측 필드 경로)
 
@@ -1027,9 +1044,14 @@ Expected: FAIL — `ModuleNotFoundError: No module named 'app.main'`
 {% block body %}
 <a href="/" class=back>← 검색</a>
 <h1>{{ v.keyword }}</h1>
-<p class=hero>{{ v.category_l1 or '미분류' }} · {{ v.type }} · 분석 리뷰 {{ v.analyzed_count }}건
-  (네이버 {{ v.source_counts.get('naver',0) }} / 유튜브 {{ v.source_counts.get('youtube',0) }} / 다나와 {{ v.source_counts.get('danawa',0) }})
-  {% if v.ad_flagged %}· 광고글 {{ v.ad_flagged }}{% endif %}</p>
+<p class=hero>{{ v.category_l1 or '미분류' }} · {{ v.type }}</p>
+<div class=stats>
+  <div class=stat><span class=num>{{ v.analyzed_count }}</span><span class=lbl>분석 리뷰</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('naver',0) }}</span><span class=lbl>네이버</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('youtube',0) }}</span><span class=lbl>유튜브</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('danawa',0) }}</span><span class=lbl>다나와</span></div>
+  {% if v.ad_flagged %}<div class=stat><span class=num>{{ v.ad_flagged }}</span><span class=lbl>광고글</span></div>{% endif %}
+</div>
 
 <section><h2>강점 — 셀링포인트 후보</h2>
 {% if v.strengths %}<ul class=points>
@@ -1062,7 +1084,8 @@ Expected: FAIL — `ModuleNotFoundError: No module named 'app.main'`
 </section>{% elif v.identity_status in ('pending', 'empty') %}<p class=muted>정형 정보 준비 중</p>{% endif %}
 
 {% if v.price %}<section><h2>가격 포지션</h2>
-  <p>최저 {{ "{:,}".format(v.price.min) }}원 ({{ v.price.low_mall }}) · 중앙 {{ "{:,}".format(v.price.median) }}원 · {{ v.price.n_malls }}개 몰 · 가격차 {{ v.price.spread_pct }}%</p>
+  <p class=price><span class=price-big>{{ "{:,}".format(v.price.min) }}원</span> 최저 · {{ v.price.low_mall }}</p>
+  <p class=muted>중앙 {{ "{:,}".format(v.price.median) }}원 · {{ v.price.n_malls }}개 몰 · 가격차 {{ v.price.spread_pct }}%</p>
 </section>{% endif %}
 
 <section class=gen>
@@ -1194,33 +1217,86 @@ document.addEventListener("click", async (e) => {
 });
 ```
 
-- [ ] **Step 2: app/static/app.css 작성 — 최소 가독 스타일**
+- [ ] **Step 2: app/static/app.css 작성 — Lumos 디자인 시스템**
+
+Dribbble "Lumos – Energy Management Dashboard" 비주얼 언어(따뜻한 오프화이트 배경, 화이트 라운드 카드 + 소프트 섀도, 선셋 오렌지/앰버 액센트, 큰 볼드 숫자, 라운드 18px). "UI 디자인 방향" 섹션의 토큰을 구현한다.
 
 ```css
-:root { --fg:#1a1a1a; --muted:#888; --line:#e3e3e3; --accent:#2563eb; }
+:root {
+  --bg:#f2f0ec; --card:#fff; --cream:#faf6f0; --fg:#1a1a1a; --muted:#938d83;
+  --line:#ece7df; --accent:#ff5a1f; --accent-2:#ffb020; --radius:18px;
+  --shadow:0 1px 2px rgba(20,16,10,.04), 0 10px 30px rgba(20,16,10,.06);
+}
 * { box-sizing: border-box; }
-body { font: 15px/1.6 system-ui, sans-serif; color: var(--fg); margin: 0; }
-header { padding: 12px 20px; border-bottom: 1px solid var(--line); }
-.logo, .back { text-decoration: none; color: var(--accent); }
-main { max-width: 860px; margin: 0 auto; padding: 20px; }
-.search { display: flex; gap: 8px; margin-bottom: 16px; }
-.search input { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 6px; }
-.search button, .gen button { padding: 10px 16px; border: 0; background: var(--accent); color: #fff; border-radius: 6px; cursor: pointer; }
-.results { list-style: none; padding: 0; }
-.results a { display: flex; justify-content: space-between; padding: 12px; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 8px; text-decoration: none; color: inherit; }
-.meta, .src { color: var(--muted); font-size: 13px; }
-.empty, .muted { color: var(--muted); }
-section { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 20px; }
-.points { list-style: none; padding: 0; }
-.points li { padding: 6px 0; }
-.n { display: inline-block; min-width: 20px; padding: 0 6px; background: #f0f0f0; border-radius: 10px; font-size: 12px; color: #555; }
-.tgt { margin: 6px 0; }
-.label { display: inline-block; min-width: 64px; color: var(--muted); font-size: 13px; }
-.tag { display: inline-block; padding: 2px 8px; background: #f5f5f5; border-radius: 12px; margin: 2px; font-size: 13px; }
-.fact { margin-right: 12px; color: #444; }
-blockquote { margin: 6px 0; padding-left: 10px; border-left: 3px solid var(--line); color: #555; font-size: 13px; }
-.draft h3 { margin: 14px 0 4px; }
-.err { color: #c0392b; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font:15px/1.6 -apple-system,"Segoe UI",system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+header { display:flex; align-items:center; padding:16px 28px; }
+.logo { display:flex; align-items:center; gap:9px; font-weight:800; font-size:17px; color:var(--fg); text-decoration:none; }
+.logo::before { content:""; width:22px; height:16px;
+  background:repeating-linear-gradient(115deg,var(--accent) 0 3px,transparent 3px 6px); border-radius:2px; }
+main { max-width:880px; margin:0 auto; padding:8px 20px 64px; }
+h1 { font-size:30px; font-weight:800; letter-spacing:-.02em; margin:.2em 0 .1em; }
+h2 { font-size:15px; font-weight:700; margin:0 0 12px; }
+.muted, .meta, .empty { color:var(--muted); }
+.back { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; }
+/* 검색 */
+.search { display:flex; gap:10px; margin:18px 0; }
+.search input { flex:1; padding:14px 16px; border:1px solid var(--line); border-radius:14px;
+  background:var(--card); font-size:15px; box-shadow:var(--shadow); }
+.search input:focus { outline:none; border-color:var(--accent); }
+.search button, .gen button { border:0; border-radius:14px; padding:14px 22px; cursor:pointer;
+  background:var(--accent); color:#fff; font-weight:700; font-size:15px; }
+.search button:hover, .gen button:hover { background:#e94e16; }
+.results { list-style:none; padding:0; margin:0; }
+.results a { display:flex; justify-content:space-between; align-items:center; gap:12px;
+  background:var(--card); border-radius:14px; box-shadow:var(--shadow);
+  padding:16px 18px; margin-bottom:10px; text-decoration:none; color:inherit; }
+.results a:hover { transform:translateY(-1px); transition:transform .1s; }
+.kw { font-weight:700; }
+.meta, .src { font-size:13px; }
+.empty { text-align:center; padding:48px; }
+/* hero + 스탯 칩 */
+.hero { color:var(--muted); font-size:14px; margin:.1em 0 1em; }
+.stats { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+.stat { background:var(--card); border-radius:14px; box-shadow:var(--shadow);
+  padding:12px 18px; min-width:96px; }
+.stat .num { display:block; font-size:22px; font-weight:800; letter-spacing:-.01em; }
+.stat .lbl { font-size:12px; color:var(--muted); }
+/* 카드 섹션 */
+section { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:20px 22px; margin-top:16px; }
+/* 강점/약점 포인트 */
+.points { list-style:none; padding:0; margin:0; }
+.points li { padding:10px 0; border-bottom:1px solid var(--line); }
+.points li:last-child { border-bottom:0; }
+.points b { font-weight:600; }
+.n { display:inline-block; min-width:22px; text-align:center; padding:1px 9px; margin-left:6px;
+  background:#fff2ea; color:var(--accent); border-radius:999px; font-size:12px; font-weight:700; }
+details summary { cursor:pointer; color:var(--muted); font-size:13px; margin-top:6px; }
+blockquote { margin:8px 0 0; padding:10px 14px; background:var(--cream); border-radius:12px;
+  border-left:3px solid var(--accent-2); color:#5b554c; font-size:13px; }
+blockquote a { color:var(--muted); text-decoration:none; }
+/* 타깃 */
+.tgt { display:flex; align-items:flex-start; gap:10px; margin:8px 0; flex-wrap:wrap; }
+.label { min-width:68px; color:var(--muted); font-size:13px; padding-top:5px; }
+.tag { display:inline-block; padding:5px 12px; background:#f6f3ee; border-radius:999px;
+  margin:2px; font-size:13px; }
+/* 정형 사실 */
+.spec { padding:8px 0; border-bottom:1px solid var(--line); }
+.spec:last-child { border-bottom:0; }
+.fact { display:inline-block; margin:2px 14px 2px 0; color:#4a463f; font-size:13px; }
+/* 가격 */
+.price { margin:0; }
+.price-big { font-size:28px; font-weight:800; letter-spacing:-.01em; margin-right:6px; }
+/* 생성 */
+.gen { background:transparent; box-shadow:none; text-align:center; padding:14px 0; }
+.gen button { border-radius:999px; padding:14px 30px; }
+#draft { margin-top:14px; text-align:left; }
+.draft h3 { font-size:14px; font-weight:700; margin:16px 0 6px; }
+.draft .src { color:var(--accent); font-weight:600; }
+.draft dt { font-weight:600; margin-top:8px; }
+.draft dd { margin:2px 0 0; color:#4a463f; }
+.err { color:#c0392b; }
 ```
 
 - [ ] **Step 3: README.md 작성**

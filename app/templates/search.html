@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+<form method=get action="/" class=search>
+  <input name=q value="{{ q|e }}" placeholder="상품 키워드 검색" autofocus>
+  <button>검색</button>
+</form>
+{% if q %}
+  {% if products %}
+  <ul class=results>
+    {% for p in products %}
+    <li><a href="/product/{{ p.uid }}">
+      <span class=kw>{{ p.keyword }}</span>
+      <span class=meta>{{ p.category_l1 or '미분류' }} · {{ p.type }} · 리뷰 {{ p.analyzed_count }}</span>
+    </a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class=empty>결과 없음. 다른 키워드를 시도해 보세요.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,2 @@
+[tool.pytest.ini_options]
+markers = ["live: 실제 OpenAI 호출(기본 skip, 키 필요)"]
