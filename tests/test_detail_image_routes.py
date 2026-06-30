@@ -1,3 +1,4 @@
+import io
 import json
 import pathlib
 from fastapi.testclient import TestClient
@@ -53,3 +54,27 @@ def test_detail_image_absent_draft_regenerates(monkeypatch):
     r = c.post("/product/P7863/detail-image", data={})   # draft 없음 → 재생성 폴백
     assert r.status_code == 200
     assert r.headers["content-type"] == "image/png"
+
+
+def test_detail_image_v2_embeds_uploaded_photo(monkeypatch):
+    cap = {}
+    c = _client(monkeypatch, html_capture=cap)
+    files = {"photo": ("p.png", io.BytesIO(b"\x89PNG\r\n\x1a\nfake"), "image/png")}
+    r = c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)}, files=files)
+    assert r.status_code == 200
+    assert cap["image"].startswith("data:image/png;base64,")   # 업로드가 data URI 로 임베드
+
+
+def test_detail_image_rejects_non_image(monkeypatch):
+    c = _client(monkeypatch)
+    files = {"photo": ("p.txt", io.BytesIO(b"hello"), "text/plain")}
+    r = c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)}, files=files)
+    assert r.status_code == 400
+
+
+def test_detail_image_rejects_oversize(monkeypatch):
+    c = _client(monkeypatch)
+    big = io.BytesIO(b"\x89PNG" + b"x" * (8 * 1024 * 1024 + 1))
+    files = {"photo": ("big.png", big, "image/png")}
+    r = c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)}, files=files)
+    assert r.status_code == 400

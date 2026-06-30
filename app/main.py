@@ -2,7 +2,7 @@
 import json
 import pathlib
 from urllib.parse import quote
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -12,6 +12,7 @@ from app.insight import build_view
 from app.generate import GenerateError
 
 _HERE = pathlib.Path(__file__).parent
+_MAX_IMG = 8 * 1024 * 1024  # 8MB
 templates = Jinja2Templates(directory=str(_HERE / "templates"))
 
 app = FastAPI(title="셀러 상세페이지 툴")
@@ -45,7 +46,7 @@ def draft(request: Request, uid: str):
 
 
 @app.post("/product/{uid}/detail-image")
-async def detail_image(uid: str, draft: str = Form(None)):
+async def detail_image(uid: str, draft: str = Form(None), photo: UploadFile = File(None)):
     doc = data.get_product(uid)
     if doc is None:
         return Response("상품을 찾을 수 없습니다.", status_code=404)
@@ -60,7 +61,17 @@ async def detail_image(uid: str, draft: str = Form(None)):
             d = generate.draft(view)
         except GenerateError:
             return Response("초안 생성 실패", status_code=502)
-    html = detail_page.build_html(view, d, None)
+    image_data_uri = None
+    if photo is not None:
+        ctype = photo.content_type or ""
+        if not ctype.startswith("image/"):
+            return Response("이미지 파일만 업로드", status_code=400)
+        raw = await photo.read()
+        if len(raw) > _MAX_IMG:
+            return Response("8MB 이하 이미지", status_code=400)
+        import base64
+        image_data_uri = f"data:{ctype};base64,{base64.b64encode(raw).decode()}"
+    html = detail_page.build_html(view, d, image_data_uri)
     try:
         png = await render.html_to_png(html)
     except render.RenderError:

@@ -11,6 +11,7 @@
   {% if d.price_positioning %}<h3>가격 포지셔닝</h3><p>{{ d.price_positioning }}</p>{% endif %}
 </div>
 <div class=export>
+  <input type=file id=photo accept="image/*">
   <button id=exportbtn data-uid="{{ uid }}">이미지로 내보내기</button>
 </div>
 {% endif %}
