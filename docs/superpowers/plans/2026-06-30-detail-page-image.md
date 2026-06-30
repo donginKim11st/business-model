@@ -719,7 +719,6 @@ Expected: 전체 PASS (live/render skip). 신규 테스트(detail_page 4 + rende
 
 Chromium 설치 가능 환경에서:
 ```bash
-python3 -m pip install pytest-asyncio
 playwright install chromium
 RUN_RENDER=1 python3 -m pytest tests/test_render.py -m render -v
 ```
