@@ -96,17 +96,23 @@ def _palette_from_rgb(rgb):
     }
 
 
-def build_html(view, draft, image_data_uri=None):
-    """편집형 PDP HTML 문자열.
+SLOTS = (
+    {"key": "hero",   "label": "히어로", "role": "상단 대표컷 · 페이지 배경색의 기준"},
+    {"key": "detail", "label": "디테일", "role": "소재·질감 클로즈업"},
+    {"key": "usage",  "label": "사용씬", "role": "실사용·연출 컷"},
+    {"key": "sub",    "label": "보조",   "role": "추가 각도·패키지"},
+)
 
-    image_data_uri 있으면 그 대표 색으로 팔레트를 만들어 배경을 맞추고,
-    없으면(또는 색 추출 실패 시) category 테마로 폴백. None → 사진 슬롯 플레이스홀더.
-    """
+
+def build_html(view, draft, images=None):
+    """흰색 적응형 PDP HTML. images = {slot_key: data_uri}. 히어로 있으면 그 색으로 액센트."""
     view = view or {}
-    theme = _theme(view.get("category_l1"))
-    if image_data_uri:
-        rgb = _dominant_rgb(image_data_uri)
-        if rgb:
-            theme = _palette_from_rgb(rgb)
+    images = images or {}
+    hero = images.get("hero")
+    if hero:
+        rgb = _dominant_rgb(hero)
+        theme = _palette_from_rgb(rgb) if rgb else _theme(view.get("category_l1"))
+    else:
+        theme = _theme(view.get("category_l1"))
     return _env.get_template("detail_page.html").render(
-        v=view, d=draft or {}, image=image_data_uri, theme=theme)
+        v=view, d=draft or {}, images=images, theme=theme)

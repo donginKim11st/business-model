@@ -1,4 +1,5 @@
 """FastAPI 앱: 검색 → 인사이트 → 생성 → 상세페이지 이미지."""
+import base64
 import json
 import pathlib
 from urllib.parse import quote
@@ -45,8 +46,25 @@ def draft(request: Request, uid: str):
         return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "error": True})
 
 
+class _BadImage(Exception):
+    pass
+
+
+async def _slot_to_data_uri(photo):
+    """업로드 파일 → data URI. 비이미지/과대면 _BadImage."""
+    ctype = photo.content_type or ""
+    if not ctype.startswith("image/"):
+        raise _BadImage("이미지 파일만 업로드")
+    raw = await photo.read(_MAX_IMG + 1)
+    if len(raw) > _MAX_IMG:
+        raise _BadImage("8MB 이하 이미지")
+    return f"data:{ctype};base64,{base64.b64encode(raw).decode()}"
+
+
 @app.post("/product/{uid}/detail-image")
-async def detail_image(uid: str, draft: str = Form(None), photo: UploadFile = File(None)):
+async def detail_image(uid: str, draft: str = Form(None),
+                       hero: UploadFile = File(None), detail: UploadFile = File(None),
+                       usage: UploadFile = File(None), sub: UploadFile = File(None)):
     doc = data.get_product(uid)
     if doc is None:
         return Response("상품을 찾을 수 없습니다.", status_code=404)
@@ -61,17 +79,14 @@ async def detail_image(uid: str, draft: str = Form(None), photo: UploadFile = Fi
             d = generate.draft(view)
         except GenerateError:
             return Response("초안 생성 실패", status_code=502)
-    image_data_uri = None
-    if photo is not None:
-        ctype = photo.content_type or ""
-        if not ctype.startswith("image/"):
-            return Response("이미지 파일만 업로드", status_code=400)
-        raw = await photo.read(_MAX_IMG + 1)
-        if len(raw) > _MAX_IMG:
-            return Response("8MB 이하 이미지", status_code=400)
-        import base64
-        image_data_uri = f"data:{ctype};base64,{base64.b64encode(raw).decode()}"
-    html = detail_page.build_html(view, d, image_data_uri)
+    images = {}
+    for key, photo in (("hero", hero), ("detail", detail), ("usage", usage), ("sub", sub)):
+        if photo is not None:
+            try:
+                images[key] = await _slot_to_data_uri(photo)
+            except _BadImage as e:
+                return Response(str(e), status_code=400)
+    html = detail_page.build_html(view, d, images)
     try:
         png = await render.html_to_png(html)
     except render.RenderError:
