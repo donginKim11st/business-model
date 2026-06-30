@@ -1,1 +1,75 @@
-/* placeholder */
+:root {
+  --bg:#f2f0ec; --card:#fff; --cream:#faf6f0; --fg:#1a1a1a; --muted:#938d83;
+  --line:#ece7df; --accent:#ff5a1f; --accent-2:#ffb020; --radius:18px;
+  --shadow:0 1px 2px rgba(20,16,10,.04), 0 10px 30px rgba(20,16,10,.06);
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font:15px/1.6 -apple-system,"Segoe UI",system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+header { display:flex; align-items:center; padding:16px 28px; }
+.logo { display:flex; align-items:center; gap:9px; font-weight:800; font-size:17px; color:var(--fg); text-decoration:none; }
+.logo::before { content:""; width:22px; height:16px;
+  background:repeating-linear-gradient(115deg,var(--accent) 0 3px,transparent 3px 6px); border-radius:2px; }
+main { max-width:880px; margin:0 auto; padding:8px 20px 64px; }
+h1 { font-size:30px; font-weight:800; letter-spacing:-.02em; margin:.2em 0 .1em; }
+h2 { font-size:15px; font-weight:700; margin:0 0 12px; }
+.muted, .meta, .empty { color:var(--muted); }
+.back { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; }
+/* 검색 */
+.search { display:flex; gap:10px; margin:18px 0; }
+.search input { flex:1; padding:14px 16px; border:1px solid var(--line); border-radius:14px;
+  background:var(--card); font-size:15px; box-shadow:var(--shadow); }
+.search input:focus { outline:none; border-color:var(--accent); }
+.search button, .gen button { border:0; border-radius:14px; padding:14px 22px; cursor:pointer;
+  background:var(--accent); color:#fff; font-weight:700; font-size:15px; }
+.search button:hover, .gen button:hover { background:#e94e16; }
+.results { list-style:none; padding:0; margin:0; }
+.results a { display:flex; justify-content:space-between; align-items:center; gap:12px;
+  background:var(--card); border-radius:14px; box-shadow:var(--shadow);
+  padding:16px 18px; margin-bottom:10px; text-decoration:none; color:inherit; }
+.results a:hover { transform:translateY(-1px); transition:transform .1s; }
+.kw { font-weight:700; }
+.meta, .src { font-size:13px; }
+.empty { text-align:center; padding:48px; }
+/* hero + 스탯 칩 */
+.hero { color:var(--muted); font-size:14px; margin:.1em 0 1em; }
+.stats { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+.stat { background:var(--card); border-radius:14px; box-shadow:var(--shadow);
+  padding:12px 18px; min-width:96px; }
+.stat .num { display:block; font-size:22px; font-weight:800; letter-spacing:-.01em; }
+.stat .lbl { font-size:12px; color:var(--muted); }
+/* 카드 섹션 */
+section { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:20px 22px; margin-top:16px; }
+/* 강점/약점 포인트 */
+.points { list-style:none; padding:0; margin:0; }
+.points li { padding:10px 0; border-bottom:1px solid var(--line); }
+.points li:last-child { border-bottom:0; }
+.points b { font-weight:600; }
+.n { display:inline-block; min-width:22px; text-align:center; padding:1px 9px; margin-left:6px;
+  background:#fff2ea; color:var(--accent); border-radius:999px; font-size:12px; font-weight:700; }
+details summary { cursor:pointer; color:var(--muted); font-size:13px; margin-top:6px; }
+blockquote { margin:8px 0 0; padding:10px 14px; background:var(--cream); border-radius:12px;
+  border-left:3px solid var(--accent-2); color:#5b554c; font-size:13px; }
+blockquote a { color:var(--muted); text-decoration:none; }
+/* 타깃 */
+.tgt { display:flex; align-items:flex-start; gap:10px; margin:8px 0; flex-wrap:wrap; }
+.label { min-width:68px; color:var(--muted); font-size:13px; padding-top:5px; }
+.tag { display:inline-block; padding:5px 12px; background:#f6f3ee; border-radius:999px;
+  margin:2px; font-size:13px; }
+/* 정형 사실 */
+.spec { padding:8px 0; border-bottom:1px solid var(--line); }
+.spec:last-child { border-bottom:0; }
+.fact { display:inline-block; margin:2px 14px 2px 0; color:#4a463f; font-size:13px; }
+/* 가격 */
+.price { margin:0; }
+.price-big { font-size:28px; font-weight:800; letter-spacing:-.01em; margin-right:6px; }
+/* 생성 */
+.gen { background:transparent; box-shadow:none; text-align:center; padding:14px 0; }
+.gen button { border-radius:999px; padding:14px 30px; }
+#draft { margin-top:14px; text-align:left; }
+.draft h3 { font-size:14px; font-weight:700; margin:16px 0 6px; }
+.draft .src { color:var(--accent); font-weight:600; }
+.draft dt { font-weight:600; margin-top:8px; }
+.draft dd { margin:2px 0 0; color:#4a463f; }
+.err { color:#c0392b; }

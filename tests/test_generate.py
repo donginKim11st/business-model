@@ -65,3 +65,14 @@ def test_draft_raises_after_two_failures():
     client = _FakeClient(["bad1", "bad2"])
     with pytest.raises(generate.GenerateError):
         generate.draft(SAMPLE_VIEW, client=client)
+
+
+import os
+
+
+@pytest.mark.live
+@pytest.mark.skipif(not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY 없음")
+def test_draft_live_smoke():
+    out = generate.draft(SAMPLE_VIEW)
+    assert len(out["titles"]) == 3
+    assert isinstance(out["selling_points"], list)
