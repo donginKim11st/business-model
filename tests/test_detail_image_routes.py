@@ -78,3 +78,25 @@ def test_detail_image_rejects_oversize(monkeypatch):
     files = {"photo": ("big.png", big, "image/png")}
     r = c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)}, files=files)
     assert r.status_code == 400
+
+
+def test_detail_image_render_error_500(monkeypatch):
+    monkeypatch.setattr(main.data, "get_product", lambda uid, **k: DOC)
+    monkeypatch.setattr(main.detail_page, "build_html", lambda v, d, image_data_uri=None: "<html></html>")
+    async def _boom(html):
+        raise main.render.RenderError("boom")
+    monkeypatch.setattr(main.render, "html_to_png", _boom)
+    c = TestClient(main.app)
+    r = c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)})
+    assert r.status_code == 500
+
+
+def test_detail_image_regenerate_fail_502(monkeypatch):
+    from app.generate import GenerateError
+    monkeypatch.setattr(main.data, "get_product", lambda uid, **k: DOC)
+    def _boom(view, **k):
+        raise GenerateError("x")
+    monkeypatch.setattr(main.generate, "draft", _boom)
+    c = TestClient(main.app)
+    r = c.post("/product/P7863/detail-image", data={})
+    assert r.status_code == 502

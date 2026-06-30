@@ -66,7 +66,7 @@ async def detail_image(uid: str, draft: str = Form(None), photo: UploadFile = Fi
         ctype = photo.content_type or ""
         if not ctype.startswith("image/"):
             return Response("이미지 파일만 업로드", status_code=400)
-        raw = await photo.read()
+        raw = await photo.read(_MAX_IMG + 1)
         if len(raw) > _MAX_IMG:
             return Response("8MB 이하 이미지", status_code=400)
         import base64
