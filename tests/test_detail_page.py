@@ -38,8 +38,9 @@ def test_no_images_uses_category_theme_and_placeholders():
 
 def test_design_omits_numbers_and_source_phrases():
     html = detail_page.build_html(VIEW, DRAFT, None)
-    assert "후기 기반" not in html                    # 데이터 출처 인용 문구 없음
-    assert "네이버 " not in html                      # 푸터 플랫폼 카운트 없음
+    assert "네이버" not in html                       # 데이터 출처(플랫폼명) 인용 없음
+    assert "유튜브" not in html
+    assert "다나와" not in html
     assert "class=no" not in html                     # 01/02 피처 번호(구 class=no) 없음
     assert '"%02d"' not in html                       # 번호 포맷 흔적 없음
 
