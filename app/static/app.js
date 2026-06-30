@@ -7,6 +7,7 @@ document.addEventListener("click", async (e) => {
   out.innerHTML = "<p class=muted>생성 중…</p>";
   try {
     const r = await fetch(`/product/${encodeURIComponent(uid)}/draft`, { method: "POST" });
+    if (!r.ok) throw new Error(r.status);
     out.innerHTML = await r.text();
     btn.textContent = "다시 생성";
   } catch {

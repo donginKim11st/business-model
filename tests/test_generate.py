@@ -1,4 +1,5 @@
 import json
+import os
 import pytest
 from app import generate
 
@@ -65,9 +66,6 @@ def test_draft_raises_after_two_failures():
     client = _FakeClient(["bad1", "bad2"])
     with pytest.raises(generate.GenerateError):
         generate.draft(SAMPLE_VIEW, client=client)
-
-
-import os
 
 
 @pytest.mark.live
