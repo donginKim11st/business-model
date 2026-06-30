@@ -42,14 +42,10 @@ img{display:block;max-width:100%}
 .qa .q{font-size:19px;font-weight:700;margin-bottom:8px}
 .qa .q::before{content:"Q  ";color:var(--accent);font-weight:800}
 .qa .a{font-size:16px;color:#4a463f;padding-left:26px}
-.foot{margin-top:64px;padding:56px 80px;background:#faf8f5;border-top:1px solid var(--line);text-align:center}
-.foot .badge{font-size:21px;font-weight:800;letter-spacing:-.01em}
-.foot .badge b{color:var(--accent)}
 </style></head>
 <body>
 
 <section class=hero>
-  <span class=eyebrow>{{ v.category_l1 or 'PRODUCT' }}</span>
   <h1>{{ d.titles[0] if d.titles else v.keyword }}</h1>
   {% if d.titles and d.titles|length > 1 %}<p class=lede>{{ d.titles[1] }}</p>{% endif %}
   {% if images.get('hero') %}<div class=hero-img><img src="{{ images.hero }}" alt="대표 이미지"></div>
@@ -93,8 +89,4 @@ img{display:block;max-width:100%}
   <h2>구매 전 궁금증</h2>
   {% for f in d.faqs %}<div class=qa><div class=q>{{ f.q }}</div><div class=a>{{ f.a }}</div></div>{% endfor %}
 </section>{% endif %}
-
-<section class=foot>
-  <div class=badge>실제 리뷰 <b>{{ v.analyzed_count }}건</b> 분석 기반</div>
-</section>
 </body></html>
