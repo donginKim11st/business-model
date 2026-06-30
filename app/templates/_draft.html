@@ -1,6 +1,7 @@
 {% if error %}
 <p class=err>생성 실패. 다시 시도해 주세요.</p>
 {% else %}
+<script type="application/json" id="draft-json">{{ d|tojson }}</script>
 <div class=draft>
   <h3>제목 후보</h3><ul>{% for t in d.titles %}<li>{{ t }}</li>{% endfor %}</ul>
   <h3>핵심 셀링포인트</h3><ul>{% for s in d.selling_points %}<li>{{ s.text }} <span class=src>[{{ s.sources|join(', ') }}]</span></li>{% endfor %}</ul>
@@ -8,5 +9,8 @@
   <h3>선제 대응 FAQ</h3><dl>{% for f in d.faqs %}<dt>{{ f.q }}</dt><dd>{{ f.a }}</dd>{% endfor %}</dl>
   {% if d.spec_highlights %}<h3>스펙 하이라이트</h3><ul>{% for s in d.spec_highlights %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
   {% if d.price_positioning %}<h3>가격 포지셔닝</h3><p>{{ d.price_positioning }}</p>{% endif %}
+</div>
+<div class=export>
+  <button id=exportbtn data-uid="{{ uid }}">이미지로 내보내기</button>
 </div>
 {% endif %}
