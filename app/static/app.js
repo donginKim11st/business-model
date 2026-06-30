@@ -29,6 +29,8 @@ document.addEventListener("click", async (e) => {
   try {
     const fd = new FormData();
     fd.append("draft", draftEl.textContent);
+    const styleEl = document.querySelector("input[name=style]:checked");
+    if (styleEl) fd.append("style", styleEl.value);
     document.querySelectorAll("input[data-slot]").forEach((inp) => {
       if (inp.files[0]) fd.append(inp.dataset.slot, inp.files[0]);
     });

@@ -11,6 +11,11 @@
   {% if d.price_positioning %}<h3>가격 포지셔닝</h3><p>{{ d.price_positioning }}</p>{% endif %}
 </div>
 <div class=export>
+  <div class=style-pick>
+    <span class=style-label>디자인 스타일</span>
+    <label><input type=radio name=style value=airy checked> 밝은 에디토리얼</label>
+    <label><input type=radio name=style value=contrast> 톤 교차</label>
+  </div>
   <div class=slot-grid>
     {% for s in slots %}
     <label class=slot-card>
