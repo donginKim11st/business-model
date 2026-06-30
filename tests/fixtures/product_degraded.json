@@ -1,0 +1,21 @@
+{
+  "_id": "S5500",
+  "keyword": "무지 반팔티",
+  "category_l1": "의류",
+  "type": "single",
+  "analyzed_count": 12,
+  "sources": {"naver": 12, "youtube": 0, "danawa": 0},
+  "ad_flagged": 0,
+  "identity": {"brand": null, "status": "pending", "n_facts": 0},
+  "taxonomy": {
+    "verdict": {"strengths": [], "weaknesses": []},
+    "context": {
+      "who": {"age": [], "gender": [], "occupation": [], "household": [], "body_type": [], "health": [], "taste_pref": [], "lifestyle": []},
+      "when": {"scene": [], "season": [], "event": [], "time_of_day": [], "frequency": []},
+      "where": {"place": []},
+      "why": {"positive_goal": [], "negative_concern": [], "workload": []},
+      "gift": {"recipient": []}
+    }
+  },
+  "catalogs": [{"ctlg_no": "5500", "disp": "단품", "identity": {}}]
+}

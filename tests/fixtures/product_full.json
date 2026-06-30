@@ -1,0 +1,37 @@
+{
+  "_id": "P7863",
+  "keyword": "쿡시 사골 미역국 쌀국수",
+  "category_l1": "식품",
+  "type": "package",
+  "analyzed_count": 224,
+  "sources": {"naver": 20, "youtube": 184, "danawa": 20},
+  "ad_flagged": 1,
+  "identity": {"brand": "쿡시", "status": "done", "n_facts": 6},
+  "taxonomy": {
+    "verdict": {
+      "strengths": [
+        {"point": "간편하게 조리할 수 있다.", "cited_examples": 5,
+         "evidence": [{"source": "naver", "date": "20260604", "url": "http://a", "quote": "쉽게 준비"}]},
+        {"point": "국물이 깊다.", "cited_examples": 2,
+         "evidence": [{"source": "danawa", "date": "20251229", "url": "http://b", "quote": "사골 진함"}]}
+      ],
+      "weaknesses": [
+        {"point": "면이 쉽게 분다.", "cited_examples": 3,
+         "evidence": [{"source": "naver", "date": "20260101", "url": "http://c", "quote": "불음"}]}
+      ]
+    },
+    "context": {
+      "who": {"household": [{"point": "부모님과 함께", "cited_examples": 2, "evidence": [{"source":"naver","date":"20260101","url":"http://d","quote":"부모님"}]}],
+              "age": [], "gender": [], "occupation": [], "body_type": [], "health": [], "taste_pref": [], "lifestyle": []},
+      "when": {"scene": [{"point": "야식으로", "cited_examples": 1, "evidence": []}], "season": [], "event": [], "time_of_day": [], "frequency": []},
+      "where": {"place": []},
+      "why": {"positive_goal": [], "negative_concern": [], "workload": []},
+      "gift": {"recipient": [{"point": "부모님댁 선물", "cited_examples": 1, "evidence": [{"source":"danawa","date":"20251229","url":"http://e","quote":"부모님댁에도 보냈다"}]}]}
+    }
+  },
+  "catalogs": [
+    {"ctlg_no": "1001", "disp": "96g 12개", "price_summary": {"min": 9900, "median": 11000, "low_mall": "쿠팡", "n_malls": 4, "spread_pct": 12},
+     "identity": {"material": "쌀,사골농축액", "origin": "대한민국", "mfg_date": "20260101", "source": "official", "gosi": {}}},
+    {"ctlg_no": "1002", "disp": "96g 24개", "price_summary": {"min": 18000, "median": 20000, "low_mall": "11번가", "n_malls": 3, "spread_pct": 8}, "identity": {}}
+  ]
+}
