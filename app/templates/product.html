@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ v.keyword }}{% endblock %}
+{% block body %}
+<a href="/" class=back>← 검색</a>
+<h1>{{ v.keyword }}</h1>
+<p class=hero>{{ v.category_l1 or '미분류' }} · {{ v.type }}</p>
+<div class=stats>
+  <div class=stat><span class=num>{{ v.analyzed_count }}</span><span class=lbl>분석 리뷰</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('naver',0) }}</span><span class=lbl>네이버</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('youtube',0) }}</span><span class=lbl>유튜브</span></div>
+  <div class=stat><span class=num>{{ v.source_counts.get('danawa',0) }}</span><span class=lbl>다나와</span></div>
+  {% if v.ad_flagged %}<div class=stat><span class=num>{{ v.ad_flagged }}</span><span class=lbl>광고글</span></div>{% endif %}
+</div>
+
+<section><h2>강점 — 셀링포인트 후보</h2>
+{% if v.strengths %}<ul class=points>
+  {% for s in v.strengths %}<li><b>{{ s.point }}</b> <span class=n>{{ s.n }}</span>
+    {% if s.evidence %}<details><summary>근거</summary>
+      {% for e in s.evidence %}<blockquote>"{{ e.quote }}" <a href="{{ e.url }}" target=_blank>{{ e.source }} {{ e.date }}</a></blockquote>{% endfor %}
+    </details>{% endif %}</li>{% endfor %}
+</ul>{% else %}<p class=muted>아직 강점 데이터 없음</p>{% endif %}</section>
+
+<section><h2>약점 — 선제 대응 포인트</h2>
+{% if v.weaknesses %}<ul class=points>
+  {% for w in v.weaknesses %}<li><b>{{ w.point }}</b> <span class=n>{{ w.n }}</span></li>{% endfor %}
+</ul>{% else %}<p class=muted>아직 약점 데이터 없음</p>{% endif %}</section>
+
+<section><h2>타깃 고객</h2>
+{% for dim, groups in v.targets.items() %}
+  {% for g in groups %}{% if g.points %}
+    <div class=tgt><span class=label>{{ g.label }}</span>
+      {% for p in g.points %}<span class=tag>{{ p.point }} <span class=n>{{ p.n }}</span></span>{% endfor %}
+    </div>
+  {% endif %}{% endfor %}
+{% endfor %}
+{% if v.gift %}<div class=tgt><span class=label>선물</span>
+  {% for p in v.gift %}<span class=tag>{{ p.point }}</span>{% endfor %}</div>{% endif %}
+</section>
+
+{% if v.specs %}<section><h2>정형 사실</h2>
+  {% for sp in v.specs %}<div class=spec><b>{{ sp.disp }}</b>
+    {% for k, val in sp.facts.items() %}<span class=fact>{{ k }}: {{ val }}</span>{% endfor %}</div>{% endfor %}
+</section>{% elif v.identity_status in ('pending', 'empty') %}<p class=muted>정형 정보 준비 중</p>{% endif %}
+
+{% if v.price %}<section><h2>가격 포지션</h2>
+  <p class=price><span class=price-big>{{ "{:,}".format(v.price.min) }}원</span> 최저 · {{ v.price.low_mall }}</p>
+  <p class=muted>중앙 {{ "{:,}".format(v.price.median) }}원 · {{ v.price.n_malls }}개 몰 · 가격차 {{ v.price.spread_pct }}%</p>
+</section>{% endif %}
+
+<section class=gen>
+  <button id=genbtn data-uid="{{ v.uid }}">상세페이지 생성</button>
+  <div id=draft></div>
+</section>
+{% endblock %}
