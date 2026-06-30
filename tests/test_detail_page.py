@@ -26,7 +26,6 @@ def test_build_html_v1_placeholder_when_no_image():
     assert "글루텐프리와 높은 쌀 함량으로 건강한 선택" in html   # 셀링포인트
     assert "[근거: naver]" in html                     # 출처 태그
     assert "글루텐이 있나요?" in html                  # FAQ
-    assert "21,060" in html                            # 가격
     assert "분석 기반" in html                         # 근거 푸터
     assert "<img" not in html                          # v1: 이미지 없음
     assert "상품 사진 영역" in html                    # 플레이스홀더
@@ -44,7 +43,7 @@ def test_build_html_hides_missing_sections():
     draft = dict(DRAFT, spec_highlights=[], price_positioning="")
     html = detail_page.build_html(view, draft, None)
     assert "최저가" not in html                        # price 없으면 가격 박스 숨김
-    assert "핵심 스펙" not in html                     # spec/price 둘 다 없으면 스펙 패널 숨김
+    assert "왜 이 제품인가" in html                    # 다른 섹션(셀링포인트)은 정상 렌더
 
 
 def test_build_html_is_self_contained():
@@ -52,3 +51,36 @@ def test_build_html_is_self_contained():
     assert "<style" in html                            # CSS 인라인
     assert "/static/" not in html                      # 외부 CSS/JS 참조 없음
     assert "http://" not in html.split("</style>")[0]  # style 내 외부 fetch 없음
+
+
+def _solid_uri(rgb):
+    """단색 PNG 의 data URI (이미지 색 추출 테스트용)."""
+    import base64
+    import io
+    from PIL import Image
+    buf = io.BytesIO()
+    Image.new("RGB", (64, 64), rgb).save(buf, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def test_dominant_rgb_and_palette_from_image():
+    rgb = detail_page._dominant_rgb(_solid_uri((200, 40, 40)))   # 붉은 상품 이미지
+    assert rgb is not None
+    assert rgb[0] > rgb[1] and rgb[0] > rgb[2]                   # 붉은색 우세
+    pal = detail_page._palette_from_rgb(rgb)
+    assert pal["on"] == "#ffffff"
+    pr, pg, pb = int(pal["primary"][1:3], 16), int(pal["primary"][3:5], 16), int(pal["primary"][5:7], 16)
+    assert pr > pg and pr > pb                                   # primary 도 붉은 계열
+
+
+def test_image_palette_overrides_category_theme():
+    html_cat = detail_page.build_html(VIEW, DRAFT, None)         # v1: 식품(라면/면류)=그린
+    html_img = detail_page.build_html(VIEW, DRAFT, _solid_uri((200, 40, 40)))
+    assert "#3f9d4f" in html_cat                                 # 카테고리 그린 테마
+    assert "#3f9d4f" not in html_img                            # 이미지 색으로 대체됨
+    assert html_cat != html_img
+
+
+def test_invalid_image_falls_back_to_category_theme():
+    html = detail_page.build_html(VIEW, DRAFT, "data:image/png;base64,iVBORw0KGgo=")
+    assert "#3f9d4f" in html                                     # 디코드 실패 → 그린 폴백, 안전

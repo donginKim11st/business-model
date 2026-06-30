@@ -35,23 +35,12 @@ body{width:900px;font:16px/1.65 -apple-system,"Segoe UI",system-ui,sans-serif;
 .chips{margin-top:24px}
 .chip{display:inline-block;padding:9px 18px;background:{{ theme.panel }};border-radius:999px;
   margin:5px 6px 5px 0;font-size:15px;font-weight:600}
-.faq h2,.spec h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:24px}
+.faq h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:24px}
 .qa{padding:22px 0;border-top:1px solid {{ theme.soft }}}
 .qa:first-of-type{border-top:0}
 .qa .q{font-size:18px;font-weight:700;margin-bottom:6px}
 .qa .q::before{content:"Q. ";color:{{ theme.primary }}}
 .qa .a{font-size:16px;opacity:.78;padding-left:24px}
-.spec{background:{{ theme.bg }}}
-.spec-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px}
-.spec-chip{display:inline-flex;align-items:center;padding:11px 20px;background:{{ theme.panel }};
-  border:1.5px solid {{ theme.primary }};color:{{ theme.primary }};border-radius:999px;
-  font-size:16px;font-weight:700}
-.price-box{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.price-num{font-size:48px;font-weight:800;letter-spacing:-.02em;color:{{ theme.ink }}}
-.price-meta{font-size:15px;opacity:.6}
-.price-line{margin-top:10px;font-size:16px;opacity:.78}
-.hash{margin-top:26px}
-.hash span{display:inline-block;color:{{ theme.primary }};font-weight:700;font-size:15px;margin:4px 14px 4px 0}
 .foot{background:{{ theme.ink }};color:#fff;text-align:center;padding:46px 72px}
 .foot .badge{font-size:20px;font-weight:800;letter-spacing:-.01em}
 .foot .src-counts{margin-top:10px;font-size:14px;opacity:.62}
@@ -91,17 +80,6 @@ body{width:900px;font:16px/1.65 -apple-system,"Segoe UI",system-ui,sans-serif;
 {% if d.faqs %}<section class="panel faq">
   <h2>구매 전 궁금증</h2>
   {% for f in d.faqs %}<div class=qa><div class=q>{{ f.q }}</div><div class=a>{{ f.a }}</div></div>{% endfor %}
-</section>{% endif %}
-
-{% if d.spec_highlights or v.price %}<section class="panel spec">
-  {% if d.spec_highlights %}<h2>핵심 스펙</h2>
-  <div class=spec-row>{% for s in d.spec_highlights %}<span class=spec-chip>{{ s }}</span>{% endfor %}</div>{% endif %}
-  {% if v.price %}<div class=price-box>
-    <span class=price-num>{{ "{:,}".format(v.price.min) }}원</span>
-    <span class=price-meta>최저가 · {{ v.price.low_mall }} · {{ v.price.n_malls }}개 몰</span>
-  </div>
-  {% if d.price_positioning %}<div class=price-line>{{ d.price_positioning }}</div>{% endif %}{% endif %}
-  {% if d.spec_highlights %}<div class=hash>{% for s in d.spec_highlights %}<span>#{{ s|replace(' ', '') }}</span>{% endfor %}</div>{% endif %}
 </section>{% endif %}
 
 <section class=foot>
