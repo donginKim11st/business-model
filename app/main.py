@@ -1,15 +1,18 @@
-"""FastAPI 앱: 검색 → 인사이트 → 생성. data/generate 는 테스트 주입 위해 모듈 참조."""
+"""FastAPI 앱: 검색 → 인사이트 → 생성 → 상세페이지 이미지."""
+import json
 import pathlib
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from urllib.parse import quote
+from fastapi import FastAPI, Request, Form, File, UploadFile
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app import data, generate
+from app import data, generate, render, detail_page
 from app.insight import build_view
 from app.generate import GenerateError
 
 _HERE = pathlib.Path(__file__).parent
+_MAX_IMG = 8 * 1024 * 1024  # 8MB
 templates = Jinja2Templates(directory=str(_HERE / "templates"))
 
 app = FastAPI(title="셀러 상세페이지 툴")
@@ -37,6 +40,42 @@ def draft(request: Request, uid: str):
         return HTMLResponse("<p class=err>상품을 찾을 수 없습니다.</p>", status_code=404)
     try:
         d = generate.draft(build_view(doc))
-        return templates.TemplateResponse(request, "_draft.html", {"d": d, "error": None})
+        return templates.TemplateResponse(request, "_draft.html", {"d": d, "uid": uid, "error": None})
     except GenerateError:
-        return templates.TemplateResponse(request, "_draft.html", {"d": None, "error": True})
+        return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "error": True})
+
+
+@app.post("/product/{uid}/detail-image")
+async def detail_image(uid: str, draft: str = Form(None), photo: UploadFile = File(None)):
+    doc = data.get_product(uid)
+    if doc is None:
+        return Response("상품을 찾을 수 없습니다.", status_code=404)
+    view = build_view(doc)
+    if draft:
+        try:
+            d = json.loads(draft)
+        except (ValueError, TypeError):
+            return Response("초안 데이터 오류", status_code=400)
+    else:
+        try:
+            d = generate.draft(view)
+        except GenerateError:
+            return Response("초안 생성 실패", status_code=502)
+    image_data_uri = None
+    if photo is not None:
+        ctype = photo.content_type or ""
+        if not ctype.startswith("image/"):
+            return Response("이미지 파일만 업로드", status_code=400)
+        raw = await photo.read(_MAX_IMG + 1)
+        if len(raw) > _MAX_IMG:
+            return Response("8MB 이하 이미지", status_code=400)
+        import base64
+        image_data_uri = f"data:{ctype};base64,{base64.b64encode(raw).decode()}"
+    html = detail_page.build_html(view, d, image_data_uri)
+    try:
+        png = await render.html_to_png(html)
+    except render.RenderError:
+        return Response("이미지 생성 실패", status_code=500)
+    fname = quote(f"{view['keyword']}_상세.png")
+    return Response(png, media_type="image/png",
+                    headers={"Content-Disposition": f"attachment; filename*=UTF-8''{fname}"})

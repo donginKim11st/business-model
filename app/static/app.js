@@ -16,3 +16,37 @@ document.addEventListener("click", async (e) => {
     btn.disabled = false;
   }
 });
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("#exportbtn");
+  if (!btn) return;
+  const uid = btn.dataset.uid;
+  const draftEl = document.getElementById("draft-json");
+  if (!draftEl) return;
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "이미지 생성 중…";
+  try {
+    const fd = new FormData();
+    fd.append("draft", draftEl.textContent);
+    const photo = document.getElementById("photo");
+    if (photo && photo.files[0]) fd.append("photo", photo.files[0]);
+    const r = await fetch(`/product/${encodeURIComponent(uid)}/detail-image`, { method: "POST", body: fd });
+    if (!r.ok) throw new Error(r.status);
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "상세페이지.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    btn.textContent = "다시 내보내기";
+  } catch {
+    alert("이미지 생성 실패. 다시 시도해 주세요.");
+    btn.textContent = orig;
+  } finally {
+    btn.disabled = false;
+  }
+});
