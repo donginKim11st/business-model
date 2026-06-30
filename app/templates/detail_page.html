@@ -1,0 +1,67 @@
+<!doctype html><html lang=ko><head><meta charset=utf-8>
+<style>
+:root{--bg:#f2f0ec;--card:#fff;--cream:#faf6f0;--fg:#1a1a1a;--muted:#938d83;
+  --line:#ece7df;--accent:#ff5a1f;--accent-2:#ffb020;--radius:18px;
+  --shadow:0 1px 2px rgba(20,16,10,.04),0 10px 30px rgba(20,16,10,.06);}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,"Segoe UI",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;width:860px;padding:28px}
+section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:24px 26px;margin-bottom:18px}
+.photo{height:360px;border-radius:var(--radius);overflow:hidden;margin-bottom:18px;
+  box-shadow:var(--shadow)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ph{height:360px;border:2px dashed var(--line);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;color:var(--muted);
+  background:var(--cream);margin-bottom:18px;font-size:15px}
+.headline{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:.1em 0}
+.subtitle{color:var(--muted);font-size:14px}
+h2{font-size:15px;font-weight:700;margin:0 0 14px}
+.sp{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+.sp .dot{color:var(--accent);font-weight:800;font-size:18px;line-height:1.2}
+.sp .src{color:var(--accent);font-size:12px;font-weight:600;margin-left:6px}
+.tag{display:inline-block;padding:5px 12px;background:#f6f3ee;border-radius:999px;margin:3px;font-size:13px}
+.faq dt{font-weight:600;margin-top:10px}
+.faq dd{color:#4a463f;margin-top:2px}
+.spec{display:inline-block;padding:5px 12px;background:#fff2ea;color:var(--accent);
+  border-radius:999px;margin:3px;font-size:13px;font-weight:600}
+.price-big{font-size:30px;font-weight:800;letter-spacing:-.01em;margin-right:6px}
+.foot{text-align:center;color:var(--muted);font-size:13px;background:transparent;box-shadow:none}
+.foot b{color:var(--fg)}
+</style></head>
+<body>
+{% if image %}<div class=photo><img src="{{ image }}" alt="상품 사진"></div>
+{% else %}<div class=ph>상품 사진 영역</div>{% endif %}
+
+<section>
+  <div class=headline>{{ d.titles[0] if d.titles else v.keyword }}</div>
+  <div class=subtitle>{{ v.keyword }} · {{ v.category_l1 or '' }}</div>
+</section>
+
+{% if d.selling_points %}<section><h2>핵심 셀링포인트</h2>
+  {% for s in d.selling_points %}<div class=sp><span class=dot>●</span><div>{{ s.text }}
+    {% if s.sources %}<span class=src>[근거: {{ s.sources|join(', ') }}]</span>{% endif %}</div></div>{% endfor %}
+</section>{% endif %}
+
+{% if d.target_copy %}<section><h2>이런 분께 추천</h2>
+  <p>{{ d.target_copy }}</p>
+  <div style="margin-top:10px">
+  {% for dim, groups in v.targets.items() %}{% for g in groups %}{% for p in g.points %}<span class=tag>{{ p.point }}</span>{% endfor %}{% endfor %}{% endfor %}
+  </div>
+</section>{% endif %}
+
+{% if d.faqs %}<section><h2>자주 묻는 질문</h2>
+  <dl class=faq>{% for f in d.faqs %}<dt>{{ f.q }}</dt><dd>{{ f.a }}</dd>{% endfor %}</dl>
+</section>{% endif %}
+
+{% if d.spec_highlights %}<section><h2>스펙 하이라이트</h2>
+  {% for s in d.spec_highlights %}<span class=spec>{{ s }}</span>{% endfor %}
+</section>{% endif %}
+
+{% if v.price %}<section><h2>가격 포지션</h2>
+  <span class=price-big>{{ "{:,}".format(v.price.min) }}원</span> 최저 · {{ v.price.low_mall }}
+  {% if d.price_positioning %}<p style="color:#938d83;margin-top:6px">{{ d.price_positioning }}</p>{% endif %}
+</section>{% endif %}
+
+<section class=foot>실제 리뷰 <b>{{ v.analyzed_count }}건</b> 분석 기반 · 네이버 {{ v.source_counts.get('naver',0) }} / 유튜브 {{ v.source_counts.get('youtube',0) }} / 다나와 {{ v.source_counts.get('danawa',0) }}</section>
+</body></html>
