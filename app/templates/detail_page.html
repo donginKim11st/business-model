@@ -1,75 +1,81 @@
 <!doctype html><html lang=ko><head><meta charset=utf-8>
 <style>
+:root{--accent:{{ theme.primary }};--tint:{{ theme.soft }};--ink:#191613;--sub:#6e6a63;--line:#eceae6;--bg:#ffffff}
 *{box-sizing:border-box;margin:0;padding:0}
-body{width:900px;font:16px/1.65 -apple-system,"Segoe UI",system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;color:{{ theme.ink }};background:{{ theme.panel }}}
-.panel{padding:64px 72px}
-.hero{background:{{ theme.bg }};padding-top:72px}
-.eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.12em;
-  color:{{ theme.primary }};text-transform:uppercase;margin-bottom:18px}
-.hero h1{font-size:52px;line-height:1.12;font-weight:800;letter-spacing:-.03em;margin-bottom:16px}
-.hero .sub{font-size:18px;color:{{ theme.ink }};opacity:.62;margin-bottom:26px}
-.tags{margin-top:20px}
-.tags .h{display:inline-block;font-size:15px;font-weight:700;color:{{ theme.primary }};margin:4px 14px 4px 0}
-.shot{margin-top:40px;height:420px;border-radius:24px;overflow:hidden;
-  box-shadow:0 24px 60px rgba(20,16,10,.12)}
-.shot img{width:100%;height:100%;object-fit:cover;display:block}
-.shot.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,{{ theme.soft }},{{ theme.bg }});color:{{ theme.primary }}}
-.shot.ph .big{font-size:30px;font-weight:800;letter-spacing:-.02em;opacity:.5;text-align:center;padding:0 30px}
-.shot.ph .lbl{margin-top:14px;font-size:13px;font-weight:600;opacity:.55;letter-spacing:.08em}
-.statement{background:{{ theme.primary }};color:{{ theme.on }};text-align:center;padding:56px 72px}
-.statement p{font-size:30px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
-.sec-label{font-size:13px;font-weight:700;letter-spacing:.14em;color:{{ theme.primary }};
-  text-transform:uppercase;margin-bottom:34px;text-align:center}
-.sp{display:flex;gap:28px;align-items:flex-start;padding:30px 0;border-top:1px solid {{ theme.soft }}}
-.sp:first-of-type{border-top:0}
-.sp .no{font-size:46px;font-weight:800;line-height:1;letter-spacing:-.03em;color:{{ theme.primary }};
-  min-width:78px;opacity:.9}
-.sp .body h3{font-size:25px;font-weight:800;line-height:1.32;letter-spacing:-.02em;margin-bottom:8px}
-.sp .src{display:inline-block;font-size:13px;font-weight:700;color:{{ theme.primary }};
-  background:{{ theme.soft }};padding:3px 12px;border-radius:999px}
-.target{background:{{ theme.soft }}}
-.target h2{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
-.target p{font-size:18px;line-height:1.7;opacity:.82;max-width:660px}
-.chips{margin-top:24px}
-.chip{display:inline-block;padding:9px 18px;background:{{ theme.panel }};border-radius:999px;
-  margin:5px 6px 5px 0;font-size:15px;font-weight:600}
-.faq h2{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:24px}
-.qa{padding:22px 0;border-top:1px solid {{ theme.soft }}}
+body{width:1000px;background:var(--bg);color:var(--ink);
+  font:16px/1.7 -apple-system,"Apple SD Gothic Neo","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+.eyebrow{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.18em;color:var(--accent);margin-bottom:24px}
+.hero{padding:112px 80px 0}
+.hero h1{font-size:54px;line-height:1.18;font-weight:800;letter-spacing:-.03em;max-width:760px}
+.hero .lede{margin-top:22px;font-size:21px;line-height:1.6;color:var(--sub);max-width:620px}
+.hero-img{margin-top:56px;height:520px;border-radius:20px;overflow:hidden}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-img.ph{display:flex;align-items:center;justify-content:center;
+  background:var(--tint);color:var(--accent);font-size:16px;font-weight:700;letter-spacing:.04em}
+.tags{margin-top:28px}
+.tags span{display:inline-block;font-size:15px;font-weight:700;color:var(--accent);margin:4px 18px 4px 0}
+.statement{padding:128px 80px;text-align:center}
+.statement .rule{width:48px;height:3px;background:var(--accent);margin:0 auto 32px;border-radius:2px}
+.statement p{font-size:36px;line-height:1.4;font-weight:800;letter-spacing:-.02em;max-width:760px;margin:0 auto}
+.feat{display:flex;gap:56px;align-items:center;padding:72px 80px}
+.feat.rev{flex-direction:row-reverse}
+.feat-txt{flex:1}
+.feat .kicker{width:44px;height:4px;background:var(--accent);border-radius:2px;margin-bottom:22px}
+.feat-txt h2{font-size:30px;line-height:1.4;font-weight:800;letter-spacing:-.02em}
+.feat-img{flex:1;height:380px;border-radius:18px;overflow:hidden}
+.feat-img img{width:100%;height:100%;object-fit:cover}
+.feat-img.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);
+  color:var(--accent);font-weight:700;font-size:15px;opacity:.8}
+.target{margin:48px 80px;padding:72px 64px;background:var(--tint);border-radius:24px}
+.target h2{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
+.target p{font-size:19px;line-height:1.75;color:#4a463f;max-width:680px}
+.chips{margin-top:28px}
+.chip{display:inline-block;padding:10px 20px;background:#fff;border-radius:999px;margin:5px 7px 5px 0;font-size:15px;font-weight:600}
+.gift{padding:72px 80px;border-top:1px solid var(--line)}
+.gift h2{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.gift p{font-size:17px;color:var(--sub)}
+.faq{padding:96px 80px 40px}
+.faq h2{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:36px}
+.qa{padding:26px 0;border-top:1px solid var(--line)}
 .qa:first-of-type{border-top:0}
-.qa .q{font-size:18px;font-weight:700;margin-bottom:6px}
-.qa .q::before{content:"Q. ";color:{{ theme.primary }}}
-.qa .a{font-size:16px;opacity:.78;padding-left:24px}
-.foot{background:{{ theme.ink }};color:#fff;text-align:center;padding:46px 72px}
-.foot .badge{font-size:20px;font-weight:800;letter-spacing:-.01em}
-.foot .src-counts{margin-top:10px;font-size:14px;opacity:.62}
+.qa .q{font-size:19px;font-weight:700;margin-bottom:8px}
+.qa .q::before{content:"Q  ";color:var(--accent);font-weight:800}
+.qa .a{font-size:16px;color:#4a463f;padding-left:26px}
+.foot{margin-top:64px;padding:56px 80px;background:#faf8f5;border-top:1px solid var(--line);text-align:center}
+.foot .badge{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.foot .badge b{color:var(--accent)}
 </style></head>
 <body>
 
-<section class="panel hero">
+<section class=hero>
   <span class=eyebrow>{{ v.category_l1 or 'PRODUCT' }}</span>
   <h1>{{ d.titles[0] if d.titles else v.keyword }}</h1>
-  <div class=sub>{{ v.keyword }}</div>
-  {% if d.spec_highlights %}<div class=tags>{% for s in d.spec_highlights %}<span class=h>#{{ s|replace(' ', '') }}</span>{% endfor %}</div>{% endif %}
-  {% if image %}<div class=shot><img src="{{ image }}" alt="상품 사진"></div>
-  {% else %}<div class="shot ph"><div class=big>{{ v.keyword }}</div><div class=lbl>상품 사진 영역 — 업로드 시 이 자리에 들어갑니다</div></div>{% endif %}
+  {% if d.titles and d.titles|length > 1 %}<p class=lede>{{ d.titles[1] }}</p>{% endif %}
+  {% if images.get('hero') %}<div class=hero-img><img src="{{ images.hero }}" alt="대표 이미지"></div>
+  {% else %}<div class="hero-img ph">대표 이미지 영역 · 업로드 시 채워집니다</div>{% endif %}
+  {% if d.spec_highlights %}<div class=tags>{% for s in d.spec_highlights %}<span>#{{ s|replace(' ','') }}</span>{% endfor %}</div>{% endif %}
 </section>
 
-{% if d.titles and d.titles|length > 1 %}<section class=statement><p>{{ d.titles[1] }}</p></section>{% endif %}
-
-{% if d.selling_points %}<section class=panel>
-  <div class=sec-label>왜 이 제품인가</div>
-  {% for s in d.selling_points %}<div class=sp>
-    <div class=no>{{ "%02d"|format(loop.index) }}</div>
-    <div class=body>
-      <h3>{{ s.text }}</h3>
-      {% if s.sources %}<span class=src>[근거: {{ s.sources|join(', ') }}]</span>{% endif %}
-    </div>
-  </div>{% endfor %}
+{% if d.titles and d.titles|length > 2 %}<section class=statement>
+  <div class=rule></div><p>{{ d.titles[2] }}</p>
 </section>{% endif %}
 
-{% if d.target_copy %}<section class="panel target">
+{% set feat_imgs = [images.get('detail'), images.get('usage'), images.get('sub')] %}
+{% for s in d.selling_points %}
+<section class="feat{{ ' rev' if loop.index0 % 2 else '' }}">
+  <div class=feat-txt>
+    <div class=kicker></div>
+    <h2>{{ s.text }}</h2>
+  </div>
+  {% set fi = feat_imgs[loop.index0] if loop.index0 < 3 else None %}
+  {% if fi %}<div class=feat-img><img src="{{ fi }}" alt=""></div>
+  {% else %}<div class="feat-img ph">이미지</div>{% endif %}
+</section>
+{% endfor %}
+
+{% if d.target_copy %}<section class=target>
+  <span class=eyebrow>FOR YOU</span>
   <h2>이런 분께 추천합니다</h2>
   <p>{{ d.target_copy }}</p>
   {% set chips = [] %}
@@ -77,13 +83,18 @@ body{width:900px;font:16px/1.65 -apple-system,"Segoe UI",system-ui,sans-serif;
   {% if chips %}<div class=chips>{% for t in chips %}<span class=chip>{{ t }}</span>{% endfor %}</div>{% endif %}
 </section>{% endif %}
 
-{% if d.faqs %}<section class="panel faq">
+{% if v.gift %}<section class=gift>
+  <span class=eyebrow>GIFT</span>
+  <h2>선물로도 좋아요</h2>
+  <p>{% for g in v.gift %}{{ g.point }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+</section>{% endif %}
+
+{% if d.faqs %}<section class=faq>
   <h2>구매 전 궁금증</h2>
   {% for f in d.faqs %}<div class=qa><div class=q>{{ f.q }}</div><div class=a>{{ f.a }}</div></div>{% endfor %}
 </section>{% endif %}
 
 <section class=foot>
-  <div class=badge>실제 리뷰 {{ v.analyzed_count }}건 분석 기반</div>
-  <div class=src-counts>네이버 {{ v.source_counts.get('naver',0) }} · 유튜브 {{ v.source_counts.get('youtube',0) }} · 다나와 {{ v.source_counts.get('danawa',0) }}</div>
+  <div class=badge>실제 리뷰 <b>{{ v.analyzed_count }}건</b> 분석 기반</div>
 </section>
 </body></html>

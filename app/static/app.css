@@ -73,3 +73,9 @@ blockquote a { color:var(--muted); text-decoration:none; }
 .draft dt { font-weight:600; margin-top:8px; }
 .draft dd { margin:2px 0 0; color:#4a463f; }
 .err { color:#c0392b; }
+.slot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; }
+.slot-card { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card); cursor: pointer; }
+.slot-label { font-weight: 700; font-size: 14px; }
+.slot-role { color: var(--muted); font-size: 12px; }
+.slot-card input { margin-top: 6px; font-size: 12px; }
