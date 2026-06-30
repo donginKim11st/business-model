@@ -62,7 +62,7 @@ async def _slot_to_data_uri(photo):
 
 
 @app.post("/product/{uid}/detail-image")
-async def detail_image(uid: str, draft: str = Form(None), style: str = Form("airy"),
+async def detail_image(uid: str, draft: str = Form(None), style: str = Form("contrast"),
                        hero: UploadFile = File(None), detail: UploadFile = File(None),
                        usage: UploadFile = File(None), sub: UploadFile = File(None)):
     doc = data.get_product(uid)
@@ -87,7 +87,7 @@ async def detail_image(uid: str, draft: str = Form(None), style: str = Form("air
             except _BadImage as e:
                 return Response(str(e), status_code=400)
     if style not in detail_page.STYLES:
-        style = "airy"
+        style = "contrast"
     html = detail_page.build_html(view, d, images, style=style)
     try:
         png = await render.html_to_png(html)

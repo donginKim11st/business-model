@@ -75,10 +75,10 @@ def test_self_contained():
 
 
 def test_default_style_is_editorial_with_embedded_pretendard():
-    html = detail_page.build_html(VIEW, DRAFT, None)            # 기본 airy
+    html = detail_page.build_html(VIEW, DRAFT, None)            # 기본 contrast
     assert "@font-face" in html and "Pretendard" in html       # 폰트 임베딩
     assert "data:font/woff2;base64," in html                   # 외부 요청 없이 self-contained
-    assert 'class="ed airy"' in html
+    assert 'class="ed contrast"' in html
 
 
 def test_contrast_adds_index_numbers_airy_does_not():

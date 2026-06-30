@@ -125,10 +125,11 @@ SLOTS = (
 )
 
 
-def build_html(view, draft, images=None, style="airy"):
+def build_html(view, draft, images=None, style="contrast"):
     """흰색 적응형 PDP HTML. images = {slot_key: data_uri}. 히어로 있으면 그 색으로 액센트.
 
-    style: 'airy'·'contrast'(Pretendard 에디토리얼) | 'minimal'(기존 시스템폰트). 알 수 없으면 ValueError.
+    style: 'contrast'(기본·톤 교차 에디토리얼)·'airy'(밝은 에디토리얼) | 'minimal'(기존 시스템폰트).
+    알 수 없으면 ValueError.
     """
     if style not in _TEMPLATE_BY_STYLE:
         raise ValueError(f"unknown style: {style!r} (allowed: {', '.join(STYLES)})")
