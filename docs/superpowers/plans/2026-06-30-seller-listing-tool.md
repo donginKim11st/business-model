@@ -578,13 +578,22 @@ def test_find_products_empty_query_returns_empty():
     assert data.find_products("   ", db=db) == []
 
 
-def test_find_products_respects_limit():
+def test_find_products_no_keyword_match_returns_empty():
     db = _seed()
-    out = data.find_products("", db=db) if False else data.find_products("ㅏ", db=db)  # no match
-    assert out == []
-    out2 = data.find_products(".", db=db, limit=1) if False else data.find_products("식", db=db)
-    # 'keyword' 에 '식' 없음 → 0건 (category 아닌 keyword 매칭만)
-    assert out2 == []
+    # category_l1 에는 '식품' 이 있지만 keyword 매칭만 하므로 '식' 은 0건
+    assert data.find_products("식", db=db) == []
+
+
+def test_find_products_respects_limit():
+    db = mongomock.MongoClient().db
+    db.products.insert_many([
+        {"_id": f"P{i}", "keyword": f"라면 {i}", "category_l1": "식품", "type": "single",
+         "analyzed_count": i, "sources": {}} for i in range(5)
+    ])
+    out = data.find_products("라면", limit=2, db=db)
+    assert len(out) == 2
+    # analyzed_count 내림차순 → 가장 큰 두 개
+    assert [p["uid"] for p in out] == ["P4", "P3"]
 
 
 def test_get_product_returns_doc_or_none():
@@ -651,7 +660,7 @@ def get_product(uid, db=None):
 - [ ] **Step 4: 테스트 통과 확인**
 
 Run: `python -m pytest tests/test_data.py -v`
-Expected: PASS (4 passed)
+Expected: PASS (5 passed)
 
 - [ ] **Step 5: Commit**
 
