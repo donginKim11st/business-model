@@ -72,3 +72,38 @@ def test_self_contained():
     assert "/static/" not in html
     assert "http://" not in html.split("</style>")[0]
     assert "https://" not in html.split("</style>")[0]
+
+
+def test_default_style_is_editorial_with_embedded_pretendard():
+    html = detail_page.build_html(VIEW, DRAFT, None)            # 기본 contrast
+    assert "@font-face" in html and "Pretendard" in html       # 폰트 임베딩
+    assert "data:font/woff2;base64," in html                   # 외부 요청 없이 self-contained
+    assert 'class="ed contrast"' in html
+
+
+def test_contrast_adds_index_numbers_airy_does_not():
+    airy = detail_page.build_html(VIEW, DRAFT, None, style="airy")
+    contrast = detail_page.build_html(VIEW, DRAFT, None, style="contrast")
+    assert 'class="ed airy"' in airy                            # airy 스타일
+    assert 'class="ed contrast"' in contrast                    # body 클래스로 딥 톤 교차 활성
+    assert "<span class=fnum>" not in airy                       # airy: 인덱스 엘리먼트 없음
+    assert "<span class=fnum>" in contrast and ">01<" in contrast  # contrast: 01·02 인덱스
+
+
+def test_minimal_style_keeps_legacy_template_without_font_embed():
+    html = detail_page.build_html(VIEW, DRAFT, None, style="minimal")
+    assert "@font-face" not in html                            # 기존 시스템폰트 레이아웃
+    assert "Apple SD Gothic Neo" in html
+    assert "대표 이미지 영역" in html
+
+
+def test_unknown_style_raises():
+    import pytest
+    with pytest.raises(ValueError):
+        detail_page.build_html(VIEW, DRAFT, None, style="nope")
+
+
+def test_editorial_omits_source_phrases_and_keeps_selling_point_verbatim():
+    html = detail_page.build_html(VIEW, DRAFT, None, style="contrast")
+    assert "네이버" not in html and "유튜브" not in html and "다나와" not in html  # 출처 플랫폼명 비노출
+    assert "글루텐프리와 높은 쌀 함량으로 건강한 식사" in html   # 셀링포인트 원문 그대로(마크업 주입 없음)

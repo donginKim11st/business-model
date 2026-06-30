@@ -9,9 +9,9 @@ img{display:block;max-width:100%}
 .hero{padding:112px 80px 0}
 .hero h1{font-size:54px;line-height:1.18;font-weight:800;letter-spacing:-.03em;max-width:760px}
 .hero .lede{margin-top:22px;font-size:21px;line-height:1.6;color:var(--sub);max-width:620px}
-.hero-img{margin-top:56px;height:520px;border-radius:20px;overflow:hidden}
-.hero-img img{width:100%;height:100%;object-fit:cover}
-.hero-img.ph{display:flex;align-items:center;justify-content:center;
+.hero-img{margin-top:56px;border-radius:20px;overflow:hidden}
+.hero-img img{width:100%;height:auto;display:block}
+.hero-img.ph{height:420px;display:flex;align-items:center;justify-content:center;
   background:var(--tint);color:var(--accent);font-size:16px;font-weight:700;letter-spacing:.04em}
 .tags{margin-top:28px}
 .tags span{display:inline-block;font-size:15px;font-weight:700;color:var(--accent);margin:4px 18px 4px 0}
@@ -23,9 +23,9 @@ img{display:block;max-width:100%}
 .feat-txt{flex:1}
 .feat .kicker{width:44px;height:4px;background:var(--accent);border-radius:2px;margin-bottom:22px}
 .feat-txt h2{font-size:30px;line-height:1.4;font-weight:800;letter-spacing:-.02em}
-.feat-img{flex:1;height:380px;border-radius:18px;overflow:hidden}
-.feat-img img{width:100%;height:100%;object-fit:cover}
-.feat-img.ph{display:flex;align-items:center;justify-content:center;background:var(--tint);
+.feat-img{flex:1;border-radius:18px;overflow:hidden}
+.feat-img img{width:100%;height:auto;display:block}
+.feat-img.ph{height:320px;display:flex;align-items:center;justify-content:center;background:var(--tint);
   color:var(--accent);font-weight:700;font-size:15px;opacity:.8}
 .target{margin:48px 80px;padding:72px 64px;background:var(--tint);border-radius:24px}
 .target h2{font-size:32px;font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
@@ -42,14 +42,10 @@ img{display:block;max-width:100%}
 .qa .q{font-size:19px;font-weight:700;margin-bottom:8px}
 .qa .q::before{content:"Q  ";color:var(--accent);font-weight:800}
 .qa .a{font-size:16px;color:#4a463f;padding-left:26px}
-.foot{margin-top:64px;padding:56px 80px;background:#faf8f5;border-top:1px solid var(--line);text-align:center}
-.foot .badge{font-size:21px;font-weight:800;letter-spacing:-.01em}
-.foot .badge b{color:var(--accent)}
 </style></head>
 <body>
 
 <section class=hero>
-  <span class=eyebrow>{{ v.category_l1 or 'PRODUCT' }}</span>
   <h1>{{ d.titles[0] if d.titles else v.keyword }}</h1>
   {% if d.titles and d.titles|length > 1 %}<p class=lede>{{ d.titles[1] }}</p>{% endif %}
   {% if images.get('hero') %}<div class=hero-img><img src="{{ images.hero }}" alt="대표 이미지"></div>
@@ -93,8 +89,4 @@ img{display:block;max-width:100%}
   <h2>구매 전 궁금증</h2>
   {% for f in d.faqs %}<div class=qa><div class=q>{{ f.q }}</div><div class=a>{{ f.a }}</div></div>{% endfor %}
 </section>{% endif %}
-
-<section class=foot>
-  <div class=badge>실제 리뷰 <b>{{ v.analyzed_count }}건</b> 분석 기반</div>
-</section>
 </body></html>

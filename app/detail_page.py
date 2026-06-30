@@ -5,6 +5,7 @@
 """
 import base64
 import colorsys
+import functools
 import io
 import pathlib
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -12,6 +13,26 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 _TEMPLATES = pathlib.Path(__file__).parent / "templates"
 _env = Environment(loader=FileSystemLoader(str(_TEMPLATES)),
                    autoescape=select_autoescape(["html"]))
+
+# 스타일 → 템플릿. minimal=시스템폰트 기존 레이아웃, airy/contrast=Pretendard 에디토리얼.
+_TEMPLATE_BY_STYLE = {
+    "minimal": "detail_page.html",
+    "airy": "detail_editorial.html",
+    "contrast": "detail_editorial.html",
+}
+STYLES = tuple(_TEMPLATE_BY_STYLE)
+_FONT = pathlib.Path(__file__).parent / "static" / "fonts" / "PretendardVariable.woff2"
+
+
+@functools.lru_cache(maxsize=1)
+def _font_css():
+    """Pretendard variable woff2 → @font-face(data URI). 폰트 부재 시 빈 문자열(시스템폰트 폴백)."""
+    try:
+        b64 = base64.b64encode(_FONT.read_bytes()).decode()
+    except OSError:
+        return ""
+    return ("@font-face{font-family:Pretendard;font-weight:45 920;font-style:normal;"
+            "font-display:block;src:url(data:font/woff2;base64,%s) format('woff2')}" % b64)
 
 # 카테고리별 PDP 테마 팔레트 (이미지 없을 때 폴백).
 _THEMES = {
@@ -104,8 +125,14 @@ SLOTS = (
 )
 
 
-def build_html(view, draft, images=None):
-    """흰색 적응형 PDP HTML. images = {slot_key: data_uri}. 히어로 있으면 그 색으로 액센트."""
+def build_html(view, draft, images=None, style="contrast"):
+    """흰색 적응형 PDP HTML. images = {slot_key: data_uri}. 히어로 있으면 그 색으로 액센트.
+
+    style: 'contrast'(기본·톤 교차 에디토리얼)·'airy'(밝은 에디토리얼) | 'minimal'(기존 시스템폰트).
+    알 수 없으면 ValueError.
+    """
+    if style not in _TEMPLATE_BY_STYLE:
+        raise ValueError(f"unknown style: {style!r} (allowed: {', '.join(STYLES)})")
     view = view or {}
     images = images or {}
     hero = images.get("hero")
@@ -114,5 +141,7 @@ def build_html(view, draft, images=None):
         theme = _palette_from_rgb(rgb) if rgb else _theme(view.get("category_l1"))
     else:
         theme = _theme(view.get("category_l1"))
-    return _env.get_template("detail_page.html").render(
-        v=view, d=draft or {}, images=images, theme=theme)
+    font_css = "" if style == "minimal" else _font_css()
+    return _env.get_template(_TEMPLATE_BY_STYLE[style]).render(
+        v=view, d=draft or {}, images=images, theme=theme,
+        style=style, numbered=(style == "contrast"), font_css=font_css)

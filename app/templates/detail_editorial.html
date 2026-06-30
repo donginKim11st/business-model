@@ -1,0 +1,119 @@
+<!doctype html><html lang=ko><head><meta charset=utf-8>
+<style>
+{{ font_css|safe }}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:{{ theme.primary }};--tint:{{ theme.soft }};--panel:{{ theme.panel }};
+  --deep:color-mix(in srgb, var(--accent) 62%, #10130f);
+  --ink:#16201a;--sub:#6b726a;--line:#e9ece7;--bg:#ffffff}
+body{width:1000px;background:var(--bg);color:var(--ink);
+  font-family:Pretendard,-apple-system,"Apple SD Gothic Neo",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+img{display:block;max-width:100%}
+.kick{font-size:12px;font-weight:700;letter-spacing:.22em;color:var(--accent)}
+.cap{margin-top:12px;font-size:13px;font-weight:500;color:var(--sub);letter-spacing:0}
+hr.rule{height:1px;background:var(--line);border:0;width:48px;margin:18px 0 26px}
+
+.hero{padding:120px 84px 0}
+.hero .kick{display:block;margin-bottom:30px}
+.hero h1{font-size:78px;line-height:1.06;font-weight:800;letter-spacing:-.045em;max-width:860px}
+.hero .lede{margin-top:30px;font-size:23px;line-height:1.55;font-weight:300;color:var(--sub);max-width:560px}
+.hero-fig{margin-top:64px;border-radius:6px;overflow:hidden}
+.hero-fig img{width:100%;height:auto}
+.hero-ph{margin-top:64px;height:440px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  background:var(--tint);color:var(--accent);font-size:16px;font-weight:700;letter-spacing:.04em}
+.tags{margin-top:22px;display:flex;flex-wrap:wrap;gap:22px}
+.tags span{font-size:14px;font-weight:600;color:var(--accent);position:relative;padding-left:16px}
+.tags span::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+.statement{margin-top:40px;padding:150px 84px;text-align:center}
+.statement .qmark{font-size:90px;font-weight:800;line-height:.5;color:var(--accent);display:block;margin-bottom:30px}
+.statement p{font-size:46px;line-height:1.34;font-weight:300;letter-spacing:-.03em;max-width:720px;margin:0 auto}
+
+.feat{display:flex;gap:64px;align-items:center;padding:96px 84px}
+.feat.rev{flex-direction:row-reverse}
+.feat-txt{flex:1}
+.feat-kick{display:flex;align-items:center;gap:16px}
+.fnum{font-size:40px;font-weight:800;color:var(--tint);letter-spacing:-.04em;line-height:1}
+.feat-txt h2{font-size:34px;line-height:1.42;font-weight:400;letter-spacing:-.02em}
+.feat-img{flex:1;border-radius:6px;overflow:hidden}
+.feat-img img{width:100%;height:auto}
+.feat-ph{flex:1;height:340px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  background:var(--tint);color:var(--accent);font-weight:700;font-size:15px;opacity:.85}
+
+.target{margin:40px 84px;padding:88px 72px;border-radius:14px;background:var(--tint);color:var(--ink)}
+.target .kick{display:block;margin-bottom:24px}
+.target h2{font-size:36px;font-weight:800;letter-spacing:-.03em;margin-bottom:22px}
+.target p{font-size:21px;line-height:1.7;font-weight:300;max-width:640px;opacity:.95}
+.chips{margin-top:34px;display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:11px 22px;border-radius:999px;font-size:14px;font-weight:600;background:#fff;color:var(--ink)}
+
+.gift{padding:80px 84px;border-top:1px solid var(--line)}
+.gift .kick{display:block;margin-bottom:14px}
+.gift h3{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-bottom:12px}
+.gift p{font-size:19px;font-weight:300;color:var(--sub)}
+
+.faq{padding:90px 84px 120px}
+.faq>.kick{display:block;margin-bottom:14px}
+.faq h3{font-size:32px;font-weight:800;letter-spacing:-.03em;margin-bottom:30px}
+.qa{padding:28px 0;border-top:1px solid var(--line)}
+.qa .q{font-size:19px;font-weight:700;margin-bottom:10px}
+.qa .q::before{content:"Q ";color:var(--accent)}
+.qa .a{font-size:16px;font-weight:400;color:#55605a;padding-left:24px}
+
+/* 톤 교차(contrast): 스테이트먼트·추천 섹션을 딥 컬러로 */
+.ed.contrast .statement{background:var(--deep);color:#fff}
+.ed.contrast .target{background:var(--deep);color:#fff}
+.ed.contrast .target .chip{background:rgba(255,255,255,.12);color:#fff}
+</style></head>
+<body class="ed {{ style }}">
+
+<section class=hero>
+  <span class=kick>PRODUCT STORY</span>
+  <h1>{{ d.titles[0] if d.titles else v.keyword }}</h1>
+  {% if d.titles and d.titles|length > 1 %}<p class=lede>{{ d.titles[1] }}</p>{% endif %}
+  {% if images.get('hero') %}<figure class=hero-fig><img src="{{ images.hero }}" alt="대표 이미지"></figure>
+  <figcaption class=cap>대표 컷</figcaption>
+  {% else %}<div class=hero-ph>대표 이미지 영역 · 업로드 시 채워집니다</div>{% endif %}
+  {% if d.spec_highlights %}<div class=tags>{% for s in d.spec_highlights %}<span>{{ s }}</span>{% endfor %}</div>{% endif %}
+</section>
+
+{% if d.titles and d.titles|length > 2 %}<section class=statement>
+  <span class=qmark>“</span>
+  <p>{{ d.titles[2] }}</p>
+</section>{% endif %}
+
+{% set feat_imgs = [images.get('detail'), images.get('usage'), images.get('sub')] %}
+{% for s in d.selling_points %}
+<section class="feat{{ ' rev' if loop.index0 % 2 else '' }}">
+  <div class=feat-txt>
+    <div class=feat-kick>{% if numbered %}<span class=fnum>{{ '%02d'|format(loop.index) }}</span>{% endif %}<span class=kick>FEATURE</span></div>
+    <hr class=rule>
+    <h2>{{ s.text }}</h2>
+  </div>
+  {% set fi = feat_imgs[loop.index0] if loop.index0 < 3 else None %}
+  {% if fi %}<figure class=feat-img><img src="{{ fi }}" alt=""></figure>
+  {% else %}<div class=feat-ph>이미지</div>{% endif %}
+</section>
+{% endfor %}
+
+{% if d.target_copy %}<section class=target>
+  <span class=kick>FOR YOU</span>
+  <h2>이런 분께 추천합니다</h2>
+  <p>{{ d.target_copy }}</p>
+  {% set chips = [] %}
+  {% for dim, groups in v.targets.items() %}{% for g in groups %}{% for p in g.points %}{% if chips.append(p.point) %}{% endif %}{% endfor %}{% endfor %}{% endfor %}
+  {% if chips %}<div class=chips>{% for t in chips %}<span class=chip>{{ t }}</span>{% endfor %}</div>{% endif %}
+</section>{% endif %}
+
+{% if v.gift %}<section class=gift>
+  <div class=gift-head><span class=kick>GIFT</span><h3>선물로도 좋아요</h3></div>
+  <p>{% for g in v.gift %}{{ g.point }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+</section>{% endif %}
+
+{% if d.faqs %}<section class=faq>
+  <span class=kick>Q&A</span>
+  <h3>구매 전 궁금증</h3>
+  {% for f in d.faqs %}<div class=qa><div class=q>{{ f.q }}</div><div class=a>{{ f.a }}</div></div>{% endfor %}
+</section>{% endif %}
+
+</body></html>

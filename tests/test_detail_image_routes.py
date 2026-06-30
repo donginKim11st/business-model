@@ -16,9 +16,10 @@ def _client(monkeypatch, *, doc=DOC, draft_fn=None, img_capture=None):
     if draft_fn:
         monkeypatch.setattr(main.generate, "draft", draft_fn)
 
-    def _build(view, d, images=None):
+    def _build(view, d, images=None, style="airy"):
         if img_capture is not None:
             img_capture["images"] = images
+            img_capture["style"] = style
         return "<html></html>"
     monkeypatch.setattr(main.detail_page, "build_html", _build)
 
@@ -50,6 +51,27 @@ def test_multiple_slots_embedded_by_key(monkeypatch):
     assert set(cap["images"].keys()) == {"hero", "usage"}          # 채운 슬롯만
     assert cap["images"]["hero"].startswith("data:image/png;base64,")
     assert cap["images"]["usage"].startswith("data:image/jpeg;base64,")
+
+
+def test_style_default_contrast(monkeypatch):
+    cap = {}
+    c = _client(monkeypatch, img_capture=cap)
+    c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT)})
+    assert cap["style"] == "contrast"                  # style 미지정 → 기본 contrast
+
+
+def test_style_passed_through(monkeypatch):
+    cap = {}
+    c = _client(monkeypatch, img_capture=cap)
+    c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT), "style": "airy"})
+    assert cap["style"] == "airy"                      # 선택한 스타일 전달
+
+
+def test_unknown_style_falls_back_to_contrast(monkeypatch):
+    cap = {}
+    c = _client(monkeypatch, img_capture=cap)
+    c.post("/product/P7863/detail-image", data={"draft": json.dumps(DRAFT), "style": "bogus"})
+    assert cap["style"] == "contrast"                  # 잘못된 값 → 안전 폴백
 
 
 def test_unknown_uid_404(monkeypatch):
@@ -96,7 +118,7 @@ def test_oversize_slot_400(monkeypatch):
 
 def test_render_error_500(monkeypatch):
     monkeypatch.setattr(main.data, "get_product", lambda uid, **k: DOC)
-    monkeypatch.setattr(main.detail_page, "build_html", lambda v, d, images=None: "<html></html>")
+    monkeypatch.setattr(main.detail_page, "build_html", lambda v, d, images=None, style="airy": "<html></html>")
     async def _boom(html):
         raise main.render.RenderError("boom")
     monkeypatch.setattr(main.render, "html_to_png", _boom)
