@@ -16,7 +16,7 @@
 {% if v.strengths %}<ul class=points>
   {% for s in v.strengths %}<li><b>{{ s.point }}</b> <span class=n>{{ s.n }}</span>
     {% if s.evidence %}<details><summary>근거</summary>
-      {% for e in s.evidence %}<blockquote>"{{ e.quote }}" <a href="{{ e.url }}" target=_blank>{{ e.source }} {{ e.date }}</a></blockquote>{% endfor %}
+      {% for e in s.evidence %}<blockquote>"{{ e.quote }}" <a href="{{ e.url }}" target=_blank rel="noopener noreferrer">{{ e.source }} {{ e.date }}</a></blockquote>{% endfor %}
     </details>{% endif %}</li>{% endfor %}
 </ul>{% else %}<p class=muted>아직 강점 데이터 없음</p>{% endif %}</section>
 

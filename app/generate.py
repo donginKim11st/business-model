@@ -12,6 +12,7 @@ _SYSTEM = (
     "강점·약점·타깃·정형사실·가격)만 근거로 상세페이지 초안을 쓴다. "
     "인사이트에 없는 사실은 절대 지어내지 않는다. 각 셀링포인트에는 근거가 된 출처(naver/youtube/danawa)를 "
     "sources 필드에 단다. 약점은 숨기지 말고 '선제 대응 FAQ'로 전환한다. "
+    "titles 필드에는 반드시 정확히 3개의 후보 제목을 포함해야 한다. "
     "반드시 지정된 JSON 스키마로만 응답한다."
 )
 
@@ -25,7 +26,7 @@ DRAFT_SCHEMA = {
             "additionalProperties": False,
             "required": ["titles", "selling_points", "target_copy", "faqs", "spec_highlights", "price_positioning"],
             "properties": {
-                "titles": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 3},
+                "titles": {"type": "array", "items": {"type": "string"}},
                 "selling_points": {
                     "type": "array",
                     "items": {
@@ -103,15 +104,15 @@ def draft(view, client=None):
     messages = build_prompt(view)
     last = None
     for _ in range(2):
-        resp = client.chat.completions.create(
-            model=settings.openai_model,
-            messages=messages,
-            response_format=DRAFT_SCHEMA,
-            temperature=0.5,
-        )
-        content = resp.choices[0].message.content
         try:
+            resp = client.chat.completions.create(
+                model=settings.openai_model,
+                messages=messages,
+                response_format=DRAFT_SCHEMA,
+                temperature=0.5,
+            )
+            content = resp.choices[0].message.content
             return json.loads(content)
-        except (ValueError, TypeError) as e:
+        except Exception as e:
             last = e
-    raise GenerateError(f"초안 JSON 파싱 실패: {last}")
+    raise GenerateError(f"초안 생성 실패: {last}")

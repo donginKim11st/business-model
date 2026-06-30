@@ -57,7 +57,7 @@ def _price(catalogs):
     if not prs:
         return None
     best = min(prs, key=lambda p: p["min"])
-    return {"min": best.get("min"), "median": best.get("median"), "low_mall": best.get("low_mall"),
+    return {"min": best.get("min"), "median": best.get("median") or 0, "low_mall": best.get("low_mall"),
             "n_malls": best.get("n_malls") or 0, "spread_pct": best.get("spread_pct") or 0}
 
 

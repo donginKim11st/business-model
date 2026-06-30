@@ -68,6 +68,19 @@ def test_draft_raises_after_two_failures():
         generate.draft(SAMPLE_VIEW, client=client)
 
 
+def test_draft_wraps_api_error_as_generate_error():
+    class _ErrorClient:
+        """chat.completions.create 가 항상 Exception 을 던지는 페이크 클라이언트."""
+        def __init__(self):
+            self.chat = type("Chat", (), {"completions": self})()
+
+        def create(self, **kwargs):
+            raise Exception("boom")
+
+    with pytest.raises(generate.GenerateError):
+        generate.draft(SAMPLE_VIEW, client=_ErrorClient())
+
+
 @pytest.mark.live
 @pytest.mark.skipif(not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY 없음")
 def test_draft_live_smoke():
