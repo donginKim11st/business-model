@@ -40,7 +40,8 @@ def test_design_omits_numbers_and_source_phrases():
     html = detail_page.build_html(VIEW, DRAFT, None)
     assert "후기 기반" not in html                    # 데이터 출처 인용 문구 없음
     assert "네이버 " not in html                      # 푸터 플랫폼 카운트 없음
-    assert "class=num" not in html                    # 01/02 피처 번호 없음
+    assert "class=no" not in html                     # 01/02 피처 번호(구 class=no) 없음
+    assert '"%02d"' not in html                       # 번호 포맷 흔적 없음
 
 
 def test_hero_image_drives_accent_and_renders():

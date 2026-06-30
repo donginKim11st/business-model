@@ -68,6 +68,17 @@ def test_absent_draft_regenerates(monkeypatch):
     assert r.status_code == 200
 
 
+def test_absent_draft_regen_fail_502(monkeypatch):
+    from app.generate import GenerateError
+    monkeypatch.setattr(main.data, "get_product", lambda uid, **k: DOC)
+    def _boom(view, **k):
+        raise GenerateError("x")
+    monkeypatch.setattr(main.generate, "draft", _boom)
+    c = TestClient(main.app)
+    r = c.post("/product/P7863/detail-image", data={})
+    assert r.status_code == 502
+
+
 def test_non_image_slot_400(monkeypatch):
     c = _client(monkeypatch)
     files = {"hero": ("h.txt", io.BytesIO(b"hi"), "text/plain")}
