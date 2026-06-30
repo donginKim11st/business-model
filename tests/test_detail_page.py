@@ -43,8 +43,8 @@ def test_build_html_hides_missing_sections():
     view = dict(VIEW, price=None, specs=[])
     draft = dict(DRAFT, spec_highlights=[], price_positioning="")
     html = detail_page.build_html(view, draft, None)
-    assert "가격 포지션" not in html                   # price 없으면 섹션 숨김
-    assert "스펙 하이라이트" not in html               # spec_highlights 없으면 숨김
+    assert "최저가" not in html                        # price 없으면 가격 박스 숨김
+    assert "핵심 스펙" not in html                     # spec/price 둘 다 없으면 스펙 패널 숨김
 
 
 def test_build_html_is_self_contained():
