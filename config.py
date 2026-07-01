@@ -16,6 +16,8 @@ def load_settings(env=None):
         insights_db=env.get("INSIGHTS_DB", "insights_demo"),
         openai_api_key=env.get("OPENAI_API_KEY", ""),
         openai_model=env.get("OPENAI_MODEL", "gpt-4o-mini"),
+        naver_client_id=env.get("NAVER_CLIENT_ID", ""),
+        naver_client_secret=env.get("NAVER_CLIENT_SECRET", ""),
     )
 
 

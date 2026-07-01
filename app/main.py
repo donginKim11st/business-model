@@ -7,11 +7,11 @@ from urllib.parse import quote
 
 logger = logging.getLogger("sellering.detail_image")
 from fastapi import FastAPI, Request, Form, File, UploadFile
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app import data, generate, render, detail_page
+from app import data, generate, render, detail_page, photo_search
 from app.insight import build_view
 from app.generate import GenerateError
 
@@ -63,6 +63,40 @@ async def _slot_to_data_uri(photo):
     if len(raw) > _MAX_IMG:
         raise _BadImage("8MB 이하 이미지")
     return f"data:{ctype};base64,{base64.b64encode(raw).decode()}"
+
+
+@app.get("/product/{uid}/photo-suggest")
+def photo_suggest(uid: str, slot: str = "hero"):
+    """상품명으로 네이버 이미지 후보를 반환(슬롯별 [추천]용). 저작권 책임은 셀러."""
+    doc = data.get_product(uid)
+    if doc is None:
+        return JSONResponse({"error": "상품을 찾을 수 없습니다."}, status_code=404)
+    query = (build_view(doc).get("keyword") or "").strip()
+    if not query:
+        return JSONResponse({"error": "상품에 검색용 키워드가 없습니다."}, status_code=400)
+    try:
+        items = photo_search.search(query)
+    except photo_search.PhotoSearchError as e:
+        logger.warning("사진 추천 실패 (uid=%s): %s", uid, e)
+        return JSONResponse({"error": str(e)}, status_code=502)
+    return JSONResponse({"query": query, "slot": slot, "items": items})
+
+
+@app.post("/product/{uid}/photo-fetch")
+def photo_fetch(uid: str, url: str = Form(...)):
+    """선택한 추천 이미지 URL을 검증·다운로드해 data URI로 반환(SSRF 방어는 photo_search).
+
+    실패 사유는 서버 로그로만 남기고 클라이언트에는 일반화 메시지만 준다
+    (블라인드 SSRF 오라클·내부 포트스캐닝 방지).
+    """
+    if data.get_product(uid) is None:
+        return JSONResponse({"error": "상품을 찾을 수 없습니다."}, status_code=404)
+    try:
+        data_uri = photo_search.fetch_as_data_uri(url)
+    except photo_search.PhotoSearchError as e:
+        logger.warning("사진 fetch 실패 (uid=%s): %s", uid, e)
+        return JSONResponse({"error": "이미지를 가져올 수 없습니다."}, status_code=400)
+    return JSONResponse({"data_uri": data_uri})
 
 
 @app.post("/product/{uid}/detail-image")

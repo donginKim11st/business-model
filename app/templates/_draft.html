@@ -18,11 +18,14 @@
   </div>
   <div class=slot-grid>
     {% for s in slots %}
-    <label class=slot-card>
+    <div class=slot-card data-slot="{{ s.key }}">
       <span class=slot-label>{{ s.label }}</span>
       <span class=slot-role>{{ s.role }}</span>
-      <input type=file id="slot-{{ s.key }}" data-slot="{{ s.key }}" accept="image/png,image/jpeg,image/webp">
-    </label>
+      <input type=file id="slot-{{ s.key }}" data-slot="{{ s.key }}" accept="image/png,image/jpeg,image/webp" aria-label="{{ s.label }} 이미지 업로드">
+      <button type=button class=suggest-btn data-uid="{{ uid }}" data-slot="{{ s.key }}">사진 추천</button>
+      <div class=slot-preview data-slot="{{ s.key }}" hidden></div>
+      <div class=suggest-panel data-slot="{{ s.key }}" hidden></div>
+    </div>
     {% endfor %}
   </div>
   <button id=exportbtn data-uid="{{ uid }}">이미지로 내보내기</button>
