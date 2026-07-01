@@ -1,8 +1,11 @@
 """FastAPI 앱: 검색 → 인사이트 → 생성 → 상세페이지 이미지."""
 import base64
 import json
+import logging
 import pathlib
 from urllib.parse import quote
+
+logger = logging.getLogger("sellering.detail_image")
 from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -42,8 +45,9 @@ def draft(request: Request, uid: str):
     try:
         d = generate.draft(build_view(doc))
         return templates.TemplateResponse(request, "_draft.html", {"d": d, "uid": uid, "slots": detail_page.SLOTS, "error": None})
-    except GenerateError:
-        return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "slots": detail_page.SLOTS, "error": True})
+    except GenerateError as e:
+        logger.warning("초안 생성 실패 (uid=%s): %s", uid, e)
+        return templates.TemplateResponse(request, "_draft.html", {"d": None, "uid": uid, "slots": detail_page.SLOTS, "error": str(e)})
 
 
 class _BadImage(Exception):
@@ -91,8 +95,9 @@ async def detail_image(uid: str, draft: str = Form(None), style: str = Form("con
     html = detail_page.build_html(view, d, images, style=style)
     try:
         png = await render.html_to_png(html)
-    except render.RenderError:
-        return Response("이미지 생성 실패", status_code=500)
+    except render.RenderError as e:
+        logger.exception("PDP 렌더 실패 (uid=%s, style=%s): %s", uid, style, e)
+        return Response(f"이미지 렌더 실패: {e}", status_code=500)
     fname = quote(f"{view['keyword']}_상세.png")
     return Response(png, media_type="image/png",
                     headers={"Content-Disposition": f"attachment; filename*=UTF-8''{fname}"})

@@ -81,6 +81,12 @@ def test_draft_wraps_api_error_as_generate_error():
         generate.draft(SAMPLE_VIEW, client=_ErrorClient())
 
 
+def test_draft_missing_api_key_raises_clear_error(monkeypatch):
+    monkeypatch.setattr(generate.settings, "openai_api_key", "")
+    with pytest.raises(generate.GenerateError, match="OPENAI_API_KEY"):
+        generate.draft(SAMPLE_VIEW)                     # client 미주입 + 키 없음 → 즉시 명확한 에러
+
+
 @pytest.mark.live
 @pytest.mark.skipif(not os.environ.get("OPENAI_API_KEY"), reason="OPENAI_API_KEY 없음")
 def test_draft_live_smoke():

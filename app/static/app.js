@@ -35,7 +35,10 @@ document.addEventListener("click", async (e) => {
       if (inp.files[0]) fd.append(inp.dataset.slot, inp.files[0]);
     });
     const r = await fetch(`/product/${encodeURIComponent(uid)}/detail-image`, { method: "POST", body: fd });
-    if (!r.ok) throw new Error(r.status);
+    if (!r.ok) {
+      const msg = await r.text().catch(() => "");
+      throw new Error(msg || `오류 ${r.status}`);
+    }
     const blob = await r.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -46,8 +49,8 @@ document.addEventListener("click", async (e) => {
     a.remove();
     URL.revokeObjectURL(url);
     btn.textContent = "다시 내보내기";
-  } catch {
-    alert("이미지 생성 실패. 다시 시도해 주세요.");
+  } catch (err) {
+    alert("이미지 생성 실패: " + (err && err.message ? err.message : "다시 시도해 주세요."));
     btn.textContent = orig;
   } finally {
     btn.disabled = false;

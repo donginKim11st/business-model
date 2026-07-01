@@ -100,6 +100,8 @@ def _get_client(client):
 
 def draft(view, client=None):
     """뷰모델 → 초안 dict. 파싱 실패 시 1회 재시도, 그래도 실패면 GenerateError."""
+    if client is None and not settings.openai_api_key:
+        raise GenerateError("OPENAI_API_KEY가 설정되지 않았습니다. .env에 유효한 키를 추가하세요.")
     client = _get_client(client)
     messages = build_prompt(view)
     last = None

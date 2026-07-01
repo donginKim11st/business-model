@@ -1,5 +1,5 @@
 {% if error %}
-<p class=err>생성 실패. 다시 시도해 주세요.</p>
+<p class=err>생성 실패: {{ error if error is string else '다시 시도해 주세요.' }}</p>
 {% else %}
 <script type="application/json" id="draft-json">{{ d|tojson }}</script>
 <div class=draft>

@@ -57,10 +57,11 @@ def test_draft_success_returns_fragment(monkeypatch):
 
 def test_draft_failure_returns_error_fragment_not_500(monkeypatch):
     from app.generate import GenerateError
-    c = _client(monkeypatch, doc=DOC, draft_exc=GenerateError("x"))
+    c = _client(monkeypatch, doc=DOC, draft_exc=GenerateError("OPENAI_API_KEY가 설정되지 않았습니다."))
     r = c.post("/product/P7863/draft")
     assert r.status_code == 200
-    assert "생성 실패" in r.text
+    assert "생성 실패" in r.text                        # 접두어 유지
+    assert "OPENAI_API_KEY" in r.text                   # 구체 사유 노출(뭉개지 않음)
 
 
 def test_draft_fragment_has_slot_cards(monkeypatch):
