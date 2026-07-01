@@ -29,8 +29,15 @@ cp .env.example .env           # 아래 환경변수 채우기
 ## 실행
 
 ```bash
-uvicorn app.main:app --reload --port 8800
+./run.sh          # 권장: 환경 점검(.env·의존성·Mongo) + 기존 인스턴스 정리 후 기동
+# PORT=9000 ./run.sh 로 포트 변경
 # http://localhost:8800
+```
+
+수동 실행:
+
+```bash
+uvicorn app.main:app --reload --port 8800
 ```
 
 Mongo(`insights_demo`)가 포트 47017에 떠 있어야 인사이트가 보인다(읽기 전용).
