@@ -9,8 +9,21 @@
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 playwright install chromium    # 상세페이지 이미지 렌더용 (1회)
-cp .env.example .env   # OPENAI_API_KEY 등 채우기
+cp .env.example .env           # 아래 환경변수 채우기
 ```
+
+### 환경변수 (`.env`)
+
+| 변수 | 필수 | 설명 |
+|------|:---:|------|
+| `OPENAI_API_KEY` | ✅ | 초안 생성용 OpenAI 키. https://platform.openai.com/api-keys 에서 발급(`sk-...`) |
+| `OPENAI_MODEL` | | 기본 `gpt-4o-mini` (초안 건당 ≈ 0.25원). `gpt-4o`로 올리면 비용 급증(건당 4~6원대) |
+| `MONGO_URI` | | 기본 `mongodb://localhost:47017/?directConnection=true` |
+| `INSIGHTS_DB` | | 기본 `insights_demo` |
+
+- **`.env`는 `.gitignore`로 커밋되지 않는다** — 키가 저장소에 올라가지 않는다.
+- 키를 넣거나 바꾼 뒤 서버를 **재시작**한다. `--reload`는 `.py`만 감시하므로 `.env` 변경은 반영되지 않는다.
+- 키가 없으면 "상세페이지 생성"이 `OPENAI_API_KEY가 설정되지 않았습니다`로 **명확히 실패**한다(초안 실패 사유는 화면·서버 로그에 표시된다).
 
 ## 실행
 
@@ -46,7 +59,8 @@ python3 -m pytest -m render   # 실제 Playwright 렌더 스모크 (RUN_RENDER=1
 ## 상세페이지 이미지
 
 상품 화면에서 "상세페이지 생성" → 슬롯별(히어로/디테일/사용씬/보조)로 상품 사진을 배정 →
-"이미지로 내보내기" → 흰색 기반 적응형 PDP PNG 다운로드.
+디자인 스타일 선택 → "이미지로 내보내기" → 적응형 에디토리얼 PDP PNG 다운로드.
+- **스타일 2종**: `contrast`(톤 교차, 기본)·`airy`(밝은 에디토리얼). 타이포는 Pretendard(HTML에 임베딩).
 - 히어로 사진 색에 맞춰 페이지 액센트가 자동 적용된다(없으면 카테고리 테마).
 - 올린 슬롯만 채워지고, 빈 슬롯·없는 섹션은 우아하게 적응한다(사진 0장도 유효).
 - 가격·시장최저가·데이터 출처 문구는 PDP 이미지에 넣지 않는다(셀러 자기 PDP 용도).
